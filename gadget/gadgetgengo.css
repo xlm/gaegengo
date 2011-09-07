@@ -1,0 +1,127 @@
+html {
+    overflow:hidden;
+}
+
+body, button, input, select, textarea {
+    font-family: 'Tahoma', Geneva, sans-serif;
+    font-size:11px;
+}
+
+button {
+    margin:0px;
+}
+
+button::-moz-focus-inner {
+    margin:0px;
+    padding:0px;
+}
+
+input, select, textarea, .text_button {
+    border:solid 1px #0099CC;
+}
+
+input, select, textarea {
+    margin:1px;
+}
+
+input, textarea {
+    width:125px;
+}
+
+body {
+    background:transparent;
+    color:#195F7F;
+    width:151px;
+}
+
+p, a {
+    margin:0px;
+    padding-left:3px;
+}
+
+a {
+    color:blue;
+}
+
+textarea {
+    resize:none;
+}
+
+p.text_button {
+    background:#195F7F;
+    color:white;
+    cursor:pointer;
+    padding-top:1px;
+    padding-bottom:1px;
+}
+
+p.text_button:hover {
+    background:white;
+    color:#195F7F;
+}
+
+p.text_button:first-line {
+    font-weight:bold;
+}
+
+button#minmax_btn {
+    float:right;
+}
+
+div.container {
+    background-color:white;
+    border:solid 1px #0099CC;
+    height:105px;
+    margin:3px;
+    overflow:auto;
+    padding:0px;
+    width:151px;
+}
+
+div.hidden {
+    border:solid 0px;
+    padding:0px;
+    margin:0px;
+}
+
+div#output_field, div#options_form, div#job_form {
+    height:125px;
+    padding-top:2px;
+}    
+
+div#job_list {
+    background:transparent;
+}
+
+div#job_form, div#options_form {
+    display:none;
+    text-align:center
+}
+
+textarea#new_body_src {
+    height:84px;
+}
+
+p.bold {
+    font-weight:bold;
+}
+
+p.italic {
+    font-style:italic;
+}
+
+p#add_job {
+    background:#FF6600;
+    color:white;
+    /* padding-top:5px; removed to accomodate display of credits*/
+    /* padding-bottom:5px; removed to accomodate display of credits*/
+}
+
+p#add_job:hover {
+    background:white;
+    color:#FF6600;
+}
+
+p#comment_thread {
+    display:none;
+}

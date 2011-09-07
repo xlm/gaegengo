@@ -1,0 +1,2084 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+G-Gengo, A GMail plugin for myGengo
+Copyright 2011, Josh Chia
+Imported internal scripts are copyright their respective owners
+
+Released under the Lesser GNU Public License, version 3
+http://www.gnu.org/licenses/lgpl.html
+-->
+
+<Module>
+<ModulePrefs title="G-Gengo" directory_title="G-Gengo" author="Josh Chia" author_email="xlm.feedback+g-gengo@gmail.com" description="A GMail Gadget for MyGengo" height="270">
+    <Require feature="setprefs"/>
+    <Require feature="settitle"/>
+</ModulePrefs>
+
+<UserPref name="api_key" default_value="Enter public key" datatype="string" />
+<UserPref name="private_key" default_value="Enter private key" datatype="string" />
+
+<Content type="html">
+
+<![CDATA[
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<script type='text/javascript'>
+    // initialise key state variables
+    var mygengo = {
+        'account_balance_get':                  'account/balance?',
+        'account_stats_get':                    'account/stats?',
+        'translate_service_languages_get':      'translate/service/languages?',
+        'translate_job_language_pairs_get':     'translate/service/language_pairs?',
+        'translate_jobs_get':                   'translate/jobs?',
+        'translate_job_id_get':                 'translate/job/%s?%s',
+        'translate_job_post':                   'translate/job',
+        'translate_jobs_post':                  'translate/jobs',
+        'translate_job_id_comment_post':        'translate/job/%s/comment',
+        'translate_service_quote_post':         'translate/service/quote',
+        'translate_job_id_put':                 'translate/job/%s',
+        'translate_job_id_comments_get':        'translate/job/%s/comments?%s',
+        'translate_job_id_feedback_get':        'translate/job/%s/feedback?%s',
+        'translate_job_id_preview_get':          'translate/job/%s/preview?%s',
+        'translate_job_id_revisions_get':       'translate/job/%s/revisions?%s',
+        'translate_jobs_id_get':                'translate/jobs/%s?%s',
+        'translate_job_id_revision_rev_id_get': 'translate/job/%s/revision/%s?%s',
+        'translate_job_id_delete':              'D_translate/job/%s?%s', //prefix D_ - prevent being identical to translate_job_id_get
+        'sandbox':                              'http://api.sandbox.mygengo.com/v1/',
+        'live':                                 'http://api.mygengo.com/v1/'
+    };
+    
+    var langcodes = {
+        'de': 'German',
+        'en': 'English',
+        'es': 'Spanish',
+        'it': 'Italian',
+        'ja': 'Japanese',
+        'ru': 'Russian',
+        'zh': 'Chinese'
+    };
+    
+    var prefs = new _IG_Prefs();
+    
+    var settings = {
+        'host':             'https://gaegengo.appspot.com', //can be proxy or directly mygengo (set as undefined)
+        'run_mode':         mygengo.live,
+        'api_key':          prefs.getString('api_key'),
+        'private_key':      prefs.getString('private_key'),
+        'response_type':    'json'
+    };
+        
+    var gadgetgengo = {
+        'balance':          '',
+        'lang_pairs':       [],
+        'current_jobs':     {}
+    };
+</script>
+
+<!-- Imported scripts, previously external, internalised to prevent serving unsecured content -->
+<!-- All internal imported scripts are copyright their respective owners -->
+<script type='text/javascript'>
+/*!
+ * jQuery JavaScript Library v1.4.2
+ * http://jquery.com/
+ *
+ * Copyright 2010, John Resig
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * Includes Sizzle.js
+ * http://sizzlejs.com/
+ * Copyright 2010, The Dojo Foundation
+ * Released under the MIT, BSD, and GPL Licenses.
+ *
+ * Date: Sat Feb 13 22:33:48 2010 -0500
+ */
+(function(A,w){function ma(){if(!c.isReady){try{s.documentElement.doScroll("left")}catch(a){setTimeout(ma,1);return}c.ready()}}function Qa(a,b){b.src?c.ajax({url:b.src,async:false,dataType:"script"}):c.globalEval(b.text||b.textContent||b.innerHTML||"");b.parentNode&&b.parentNode.removeChild(b)}function X(a,b,d,f,e,j){var i=a.length;if(typeof b==="object"){for(var o in b)X(a,o,b[o],f,e,d);return a}if(d!==w){f=!j&&f&&c.isFunction(d);for(o=0;o<i;o++)e(a[o],b,f?d.call(a[o],o,e(a[o],b)):d,j);return a}return i?
+e(a[0],b):w}function J(){return(new Date).getTime()}function Y(){return false}function Z(){return true}function na(a,b,d){d[0].type=a;return c.event.handle.apply(b,d)}function oa(a){var b,d=[],f=[],e=arguments,j,i,o,k,n,r;i=c.data(this,"events");if(!(a.liveFired===this||!i||!i.live||a.button&&a.type==="click")){a.liveFired=this;var u=i.live.slice(0);for(k=0;k<u.length;k++){i=u[k];i.origType.replace(O,"")===a.type?f.push(i.selector):u.splice(k--,1)}j=c(a.target).closest(f,a.currentTarget);n=0;for(r=
+j.length;n<r;n++)for(k=0;k<u.length;k++){i=u[k];if(j[n].selector===i.selector){o=j[n].elem;f=null;if(i.preType==="mouseenter"||i.preType==="mouseleave")f=c(a.relatedTarget).closest(i.selector)[0];if(!f||f!==o)d.push({elem:o,handleObj:i})}}n=0;for(r=d.length;n<r;n++){j=d[n];a.currentTarget=j.elem;a.data=j.handleObj.data;a.handleObj=j.handleObj;if(j.handleObj.origHandler.apply(j.elem,e)===false){b=false;break}}return b}}function pa(a,b){return"live."+(a&&a!=="*"?a+".":"")+b.replace(/\./g,"`").replace(/ /g,
+"&")}function qa(a){return!a||!a.parentNode||a.parentNode.nodeType===11}function ra(a,b){var d=0;b.each(function(){if(this.nodeName===(a[d]&&a[d].nodeName)){var f=c.data(a[d++]),e=c.data(this,f);if(f=f&&f.events){delete e.handle;e.events={};for(var j in f)for(var i in f[j])c.event.add(this,j,f[j][i],f[j][i].data)}}})}function sa(a,b,d){var f,e,j;b=b&&b[0]?b[0].ownerDocument||b[0]:s;if(a.length===1&&typeof a[0]==="string"&&a[0].length<512&&b===s&&!ta.test(a[0])&&(c.support.checkClone||!ua.test(a[0]))){e=
+true;if(j=c.fragments[a[0]])if(j!==1)f=j}if(!f){f=b.createDocumentFragment();c.clean(a,b,f,d)}if(e)c.fragments[a[0]]=j?f:1;return{fragment:f,cacheable:e}}function K(a,b){var d={};c.each(va.concat.apply([],va.slice(0,b)),function(){d[this]=a});return d}function wa(a){return"scrollTo"in a&&a.document?a:a.nodeType===9?a.defaultView||a.parentWindow:false}var c=function(a,b){return new c.fn.init(a,b)},Ra=A.jQuery,Sa=A.$,s=A.document,T,Ta=/^[^<]*(<[\w\W]+>)[^>]*$|^#([\w-]+)$/,Ua=/^.[^:#\[\.,]*$/,Va=/\S/,
+Wa=/^(\s|\u00A0)+|(\s|\u00A0)+$/g,Xa=/^<(\w+)\s*\/?>(?:<\/\1>)?$/,P=navigator.userAgent,xa=false,Q=[],L,$=Object.prototype.toString,aa=Object.prototype.hasOwnProperty,ba=Array.prototype.push,R=Array.prototype.slice,ya=Array.prototype.indexOf;c.fn=c.prototype={init:function(a,b){var d,f;if(!a)return this;if(a.nodeType){this.context=this[0]=a;this.length=1;return this}if(a==="body"&&!b){this.context=s;this[0]=s.body;this.selector="body";this.length=1;return this}if(typeof a==="string")if((d=Ta.exec(a))&&
+(d[1]||!b))if(d[1]){f=b?b.ownerDocument||b:s;if(a=Xa.exec(a))if(c.isPlainObject(b)){a=[s.createElement(a[1])];c.fn.attr.call(a,b,true)}else a=[f.createElement(a[1])];else{a=sa([d[1]],[f]);a=(a.cacheable?a.fragment.cloneNode(true):a.fragment).childNodes}return c.merge(this,a)}else{if(b=s.getElementById(d[2])){if(b.id!==d[2])return T.find(a);this.length=1;this[0]=b}this.context=s;this.selector=a;return this}else if(!b&&/^\w+$/.test(a)){this.selector=a;this.context=s;a=s.getElementsByTagName(a);return c.merge(this,
+a)}else return!b||b.jquery?(b||T).find(a):c(b).find(a);else if(c.isFunction(a))return T.ready(a);if(a.selector!==w){this.selector=a.selector;this.context=a.context}return c.makeArray(a,this)},selector:"",jquery:"1.4.2",length:0,size:function(){return this.length},toArray:function(){return R.call(this,0)},get:function(a){return a==null?this.toArray():a<0?this.slice(a)[0]:this[a]},pushStack:function(a,b,d){var f=c();c.isArray(a)?ba.apply(f,a):c.merge(f,a);f.prevObject=this;f.context=this.context;if(b===
+"find")f.selector=this.selector+(this.selector?" ":"")+d;else if(b)f.selector=this.selector+"."+b+"("+d+")";return f},each:function(a,b){return c.each(this,a,b)},ready:function(a){c.bindReady();if(c.isReady)a.call(s,c);else Q&&Q.push(a);return this},eq:function(a){return a===-1?this.slice(a):this.slice(a,+a+1)},first:function(){return this.eq(0)},last:function(){return this.eq(-1)},slice:function(){return this.pushStack(R.apply(this,arguments),"slice",R.call(arguments).join(","))},map:function(a){return this.pushStack(c.map(this,
+function(b,d){return a.call(b,d,b)}))},end:function(){return this.prevObject||c(null)},push:ba,sort:[].sort,splice:[].splice};c.fn.init.prototype=c.fn;c.extend=c.fn.extend=function(){var a=arguments[0]||{},b=1,d=arguments.length,f=false,e,j,i,o;if(typeof a==="boolean"){f=a;a=arguments[1]||{};b=2}if(typeof a!=="object"&&!c.isFunction(a))a={};if(d===b){a=this;--b}for(;b<d;b++)if((e=arguments[b])!=null)for(j in e){i=a[j];o=e[j];if(a!==o)if(f&&o&&(c.isPlainObject(o)||c.isArray(o))){i=i&&(c.isPlainObject(i)||
+c.isArray(i))?i:c.isArray(o)?[]:{};a[j]=c.extend(f,i,o)}else if(o!==w)a[j]=o}return a};c.extend({noConflict:function(a){A.$=Sa;if(a)A.jQuery=Ra;return c},isReady:false,ready:function(){if(!c.isReady){if(!s.body)return setTimeout(c.ready,13);c.isReady=true;if(Q){for(var a,b=0;a=Q[b++];)a.call(s,c);Q=null}c.fn.triggerHandler&&c(s).triggerHandler("ready")}},bindReady:function(){if(!xa){xa=true;if(s.readyState==="complete")return c.ready();if(s.addEventListener){s.addEventListener("DOMContentLoaded",
+L,false);A.addEventListener("load",c.ready,false)}else if(s.attachEvent){s.attachEvent("onreadystatechange",L);A.attachEvent("onload",c.ready);var a=false;try{a=A.frameElement==null}catch(b){}s.documentElement.doScroll&&a&&ma()}}},isFunction:function(a){return $.call(a)==="[object Function]"},isArray:function(a){return $.call(a)==="[object Array]"},isPlainObject:function(a){if(!a||$.call(a)!=="[object Object]"||a.nodeType||a.setInterval)return false;if(a.constructor&&!aa.call(a,"constructor")&&!aa.call(a.constructor.prototype,
+"isPrototypeOf"))return false;var b;for(b in a);return b===w||aa.call(a,b)},isEmptyObject:function(a){for(var b in a)return false;return true},error:function(a){throw a;},parseJSON:function(a){if(typeof a!=="string"||!a)return null;a=c.trim(a);if(/^[\],:{}\s]*$/.test(a.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,"@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]").replace(/(?:^|:|,)(?:\s*\[)+/g,"")))return A.JSON&&A.JSON.parse?A.JSON.parse(a):(new Function("return "+
+a))();else c.error("Invalid JSON: "+a)},noop:function(){},globalEval:function(a){if(a&&Va.test(a)){var b=s.getElementsByTagName("head")[0]||s.documentElement,d=s.createElement("script");d.type="text/javascript";if(c.support.scriptEval)d.appendChild(s.createTextNode(a));else d.text=a;b.insertBefore(d,b.firstChild);b.removeChild(d)}},nodeName:function(a,b){return a.nodeName&&a.nodeName.toUpperCase()===b.toUpperCase()},each:function(a,b,d){var f,e=0,j=a.length,i=j===w||c.isFunction(a);if(d)if(i)for(f in a){if(b.apply(a[f],
+d)===false)break}else for(;e<j;){if(b.apply(a[e++],d)===false)break}else if(i)for(f in a){if(b.call(a[f],f,a[f])===false)break}else for(d=a[0];e<j&&b.call(d,e,d)!==false;d=a[++e]);return a},trim:function(a){return(a||"").replace(Wa,"")},makeArray:function(a,b){b=b||[];if(a!=null)a.length==null||typeof a==="string"||c.isFunction(a)||typeof a!=="function"&&a.setInterval?ba.call(b,a):c.merge(b,a);return b},inArray:function(a,b){if(b.indexOf)return b.indexOf(a);for(var d=0,f=b.length;d<f;d++)if(b[d]===
+a)return d;return-1},merge:function(a,b){var d=a.length,f=0;if(typeof b.length==="number")for(var e=b.length;f<e;f++)a[d++]=b[f];else for(;b[f]!==w;)a[d++]=b[f++];a.length=d;return a},grep:function(a,b,d){for(var f=[],e=0,j=a.length;e<j;e++)!d!==!b(a[e],e)&&f.push(a[e]);return f},map:function(a,b,d){for(var f=[],e,j=0,i=a.length;j<i;j++){e=b(a[j],j,d);if(e!=null)f[f.length]=e}return f.concat.apply([],f)},guid:1,proxy:function(a,b,d){if(arguments.length===2)if(typeof b==="string"){d=a;a=d[b];b=w}else if(b&&
+!c.isFunction(b)){d=b;b=w}if(!b&&a)b=function(){return a.apply(d||this,arguments)};if(a)b.guid=a.guid=a.guid||b.guid||c.guid++;return b},uaMatch:function(a){a=a.toLowerCase();a=/(webkit)[ \/]([\w.]+)/.exec(a)||/(opera)(?:.*version)?[ \/]([\w.]+)/.exec(a)||/(msie) ([\w.]+)/.exec(a)||!/compatible/.test(a)&&/(mozilla)(?:.*? rv:([\w.]+))?/.exec(a)||[];return{browser:a[1]||"",version:a[2]||"0"}},browser:{}});P=c.uaMatch(P);if(P.browser){c.browser[P.browser]=true;c.browser.version=P.version}if(c.browser.webkit)c.browser.safari=
+true;if(ya)c.inArray=function(a,b){return ya.call(b,a)};T=c(s);if(s.addEventListener)L=function(){s.removeEventListener("DOMContentLoaded",L,false);c.ready()};else if(s.attachEvent)L=function(){if(s.readyState==="complete"){s.detachEvent("onreadystatechange",L);c.ready()}};(function(){c.support={};var a=s.documentElement,b=s.createElement("script"),d=s.createElement("div"),f="script"+J();d.style.display="none";d.innerHTML="   <link/><table></table><a href='/a' style='color:red;float:left;opacity:.55;'>a</a><input type='checkbox'/>";
+var e=d.getElementsByTagName("*"),j=d.getElementsByTagName("a")[0];if(!(!e||!e.length||!j)){c.support={leadingWhitespace:d.firstChild.nodeType===3,tbody:!d.getElementsByTagName("tbody").length,htmlSerialize:!!d.getElementsByTagName("link").length,style:/red/.test(j.getAttribute("style")),hrefNormalized:j.getAttribute("href")==="/a",opacity:/^0.55$/.test(j.style.opacity),cssFloat:!!j.style.cssFloat,checkOn:d.getElementsByTagName("input")[0].value==="on",optSelected:s.createElement("select").appendChild(s.createElement("option")).selected,
+parentNode:d.removeChild(d.appendChild(s.createElement("div"))).parentNode===null,deleteExpando:true,checkClone:false,scriptEval:false,noCloneEvent:true,boxModel:null};b.type="text/javascript";try{b.appendChild(s.createTextNode("window."+f+"=1;"))}catch(i){}a.insertBefore(b,a.firstChild);if(A[f]){c.support.scriptEval=true;delete A[f]}try{delete b.test}catch(o){c.support.deleteExpando=false}a.removeChild(b);if(d.attachEvent&&d.fireEvent){d.attachEvent("onclick",function k(){c.support.noCloneEvent=
+false;d.detachEvent("onclick",k)});d.cloneNode(true).fireEvent("onclick")}d=s.createElement("div");d.innerHTML="<input type='radio' name='radiotest' checked='checked'/>";a=s.createDocumentFragment();a.appendChild(d.firstChild);c.support.checkClone=a.cloneNode(true).cloneNode(true).lastChild.checked;c(function(){var k=s.createElement("div");k.style.width=k.style.paddingLeft="1px";s.body.appendChild(k);c.boxModel=c.support.boxModel=k.offsetWidth===2;s.body.removeChild(k).style.display="none"});a=function(k){var n=
+s.createElement("div");k="on"+k;var r=k in n;if(!r){n.setAttribute(k,"return;");r=typeof n[k]==="function"}return r};c.support.submitBubbles=a("submit");c.support.changeBubbles=a("change");a=b=d=e=j=null}})();c.props={"for":"htmlFor","class":"className",readonly:"readOnly",maxlength:"maxLength",cellspacing:"cellSpacing",rowspan:"rowSpan",colspan:"colSpan",tabindex:"tabIndex",usemap:"useMap",frameborder:"frameBorder"};var G="jQuery"+J(),Ya=0,za={};c.extend({cache:{},expando:G,noData:{embed:true,object:true,
+applet:true},data:function(a,b,d){if(!(a.nodeName&&c.noData[a.nodeName.toLowerCase()])){a=a==A?za:a;var f=a[G],e=c.cache;if(!f&&typeof b==="string"&&d===w)return null;f||(f=++Ya);if(typeof b==="object"){a[G]=f;e[f]=c.extend(true,{},b)}else if(!e[f]){a[G]=f;e[f]={}}a=e[f];if(d!==w)a[b]=d;return typeof b==="string"?a[b]:a}},removeData:function(a,b){if(!(a.nodeName&&c.noData[a.nodeName.toLowerCase()])){a=a==A?za:a;var d=a[G],f=c.cache,e=f[d];if(b){if(e){delete e[b];c.isEmptyObject(e)&&c.removeData(a)}}else{if(c.support.deleteExpando)delete a[c.expando];
+else a.removeAttribute&&a.removeAttribute(c.expando);delete f[d]}}}});c.fn.extend({data:function(a,b){if(typeof a==="undefined"&&this.length)return c.data(this[0]);else if(typeof a==="object")return this.each(function(){c.data(this,a)});var d=a.split(".");d[1]=d[1]?"."+d[1]:"";if(b===w){var f=this.triggerHandler("getData"+d[1]+"!",[d[0]]);if(f===w&&this.length)f=c.data(this[0],a);return f===w&&d[1]?this.data(d[0]):f}else return this.trigger("setData"+d[1]+"!",[d[0],b]).each(function(){c.data(this,
+a,b)})},removeData:function(a){return this.each(function(){c.removeData(this,a)})}});c.extend({queue:function(a,b,d){if(a){b=(b||"fx")+"queue";var f=c.data(a,b);if(!d)return f||[];if(!f||c.isArray(d))f=c.data(a,b,c.makeArray(d));else f.push(d);return f}},dequeue:function(a,b){b=b||"fx";var d=c.queue(a,b),f=d.shift();if(f==="inprogress")f=d.shift();if(f){b==="fx"&&d.unshift("inprogress");f.call(a,function(){c.dequeue(a,b)})}}});c.fn.extend({queue:function(a,b){if(typeof a!=="string"){b=a;a="fx"}if(b===
+w)return c.queue(this[0],a);return this.each(function(){var d=c.queue(this,a,b);a==="fx"&&d[0]!=="inprogress"&&c.dequeue(this,a)})},dequeue:function(a){return this.each(function(){c.dequeue(this,a)})},delay:function(a,b){a=c.fx?c.fx.speeds[a]||a:a;b=b||"fx";return this.queue(b,function(){var d=this;setTimeout(function(){c.dequeue(d,b)},a)})},clearQueue:function(a){return this.queue(a||"fx",[])}});var Aa=/[\n\t]/g,ca=/\s+/,Za=/\r/g,$a=/href|src|style/,ab=/(button|input)/i,bb=/(button|input|object|select|textarea)/i,
+cb=/^(a|area)$/i,Ba=/radio|checkbox/;c.fn.extend({attr:function(a,b){return X(this,a,b,true,c.attr)},removeAttr:function(a){return this.each(function(){c.attr(this,a,"");this.nodeType===1&&this.removeAttribute(a)})},addClass:function(a){if(c.isFunction(a))return this.each(function(n){var r=c(this);r.addClass(a.call(this,n,r.attr("class")))});if(a&&typeof a==="string")for(var b=(a||"").split(ca),d=0,f=this.length;d<f;d++){var e=this[d];if(e.nodeType===1)if(e.className){for(var j=" "+e.className+" ",
+i=e.className,o=0,k=b.length;o<k;o++)if(j.indexOf(" "+b[o]+" ")<0)i+=" "+b[o];e.className=c.trim(i)}else e.className=a}return this},removeClass:function(a){if(c.isFunction(a))return this.each(function(k){var n=c(this);n.removeClass(a.call(this,k,n.attr("class")))});if(a&&typeof a==="string"||a===w)for(var b=(a||"").split(ca),d=0,f=this.length;d<f;d++){var e=this[d];if(e.nodeType===1&&e.className)if(a){for(var j=(" "+e.className+" ").replace(Aa," "),i=0,o=b.length;i<o;i++)j=j.replace(" "+b[i]+" ",
+" ");e.className=c.trim(j)}else e.className=""}return this},toggleClass:function(a,b){var d=typeof a,f=typeof b==="boolean";if(c.isFunction(a))return this.each(function(e){var j=c(this);j.toggleClass(a.call(this,e,j.attr("class"),b),b)});return this.each(function(){if(d==="string")for(var e,j=0,i=c(this),o=b,k=a.split(ca);e=k[j++];){o=f?o:!i.hasClass(e);i[o?"addClass":"removeClass"](e)}else if(d==="undefined"||d==="boolean"){this.className&&c.data(this,"__className__",this.className);this.className=
+this.className||a===false?"":c.data(this,"__className__")||""}})},hasClass:function(a){a=" "+a+" ";for(var b=0,d=this.length;b<d;b++)if((" "+this[b].className+" ").replace(Aa," ").indexOf(a)>-1)return true;return false},val:function(a){if(a===w){var b=this[0];if(b){if(c.nodeName(b,"option"))return(b.attributes.value||{}).specified?b.value:b.text;if(c.nodeName(b,"select")){var d=b.selectedIndex,f=[],e=b.options;b=b.type==="select-one";if(d<0)return null;var j=b?d:0;for(d=b?d+1:e.length;j<d;j++){var i=
+e[j];if(i.selected){a=c(i).val();if(b)return a;f.push(a)}}return f}if(Ba.test(b.type)&&!c.support.checkOn)return b.getAttribute("value")===null?"on":b.value;return(b.value||"").replace(Za,"")}return w}var o=c.isFunction(a);return this.each(function(k){var n=c(this),r=a;if(this.nodeType===1){if(o)r=a.call(this,k,n.val());if(typeof r==="number")r+="";if(c.isArray(r)&&Ba.test(this.type))this.checked=c.inArray(n.val(),r)>=0;else if(c.nodeName(this,"select")){var u=c.makeArray(r);c("option",this).each(function(){this.selected=
+c.inArray(c(this).val(),u)>=0});if(!u.length)this.selectedIndex=-1}else this.value=r}})}});c.extend({attrFn:{val:true,css:true,html:true,text:true,data:true,width:true,height:true,offset:true},attr:function(a,b,d,f){if(!a||a.nodeType===3||a.nodeType===8)return w;if(f&&b in c.attrFn)return c(a)[b](d);f=a.nodeType!==1||!c.isXMLDoc(a);var e=d!==w;b=f&&c.props[b]||b;if(a.nodeType===1){var j=$a.test(b);if(b in a&&f&&!j){if(e){b==="type"&&ab.test(a.nodeName)&&a.parentNode&&c.error("type property can't be changed");
+a[b]=d}if(c.nodeName(a,"form")&&a.getAttributeNode(b))return a.getAttributeNode(b).nodeValue;if(b==="tabIndex")return(b=a.getAttributeNode("tabIndex"))&&b.specified?b.value:bb.test(a.nodeName)||cb.test(a.nodeName)&&a.href?0:w;return a[b]}if(!c.support.style&&f&&b==="style"){if(e)a.style.cssText=""+d;return a.style.cssText}e&&a.setAttribute(b,""+d);a=!c.support.hrefNormalized&&f&&j?a.getAttribute(b,2):a.getAttribute(b);return a===null?w:a}return c.style(a,b,d)}});var O=/\.(.*)$/,db=function(a){return a.replace(/[^\w\s\.\|`]/g,
+function(b){return"\\"+b})};c.event={add:function(a,b,d,f){if(!(a.nodeType===3||a.nodeType===8)){if(a.setInterval&&a!==A&&!a.frameElement)a=A;var e,j;if(d.handler){e=d;d=e.handler}if(!d.guid)d.guid=c.guid++;if(j=c.data(a)){var i=j.events=j.events||{},o=j.handle;if(!o)j.handle=o=function(){return typeof c!=="undefined"&&!c.event.triggered?c.event.handle.apply(o.elem,arguments):w};o.elem=a;b=b.split(" ");for(var k,n=0,r;k=b[n++];){j=e?c.extend({},e):{handler:d,data:f};if(k.indexOf(".")>-1){r=k.split(".");
+k=r.shift();j.namespace=r.slice(0).sort().join(".")}else{r=[];j.namespace=""}j.type=k;j.guid=d.guid;var u=i[k],z=c.event.special[k]||{};if(!u){u=i[k]=[];if(!z.setup||z.setup.call(a,f,r,o)===false)if(a.addEventListener)a.addEventListener(k,o,false);else a.attachEvent&&a.attachEvent("on"+k,o)}if(z.add){z.add.call(a,j);if(!j.handler.guid)j.handler.guid=d.guid}u.push(j);c.event.global[k]=true}a=null}}},global:{},remove:function(a,b,d,f){if(!(a.nodeType===3||a.nodeType===8)){var e,j=0,i,o,k,n,r,u,z=c.data(a),
+C=z&&z.events;if(z&&C){if(b&&b.type){d=b.handler;b=b.type}if(!b||typeof b==="string"&&b.charAt(0)==="."){b=b||"";for(e in C)c.event.remove(a,e+b)}else{for(b=b.split(" ");e=b[j++];){n=e;i=e.indexOf(".")<0;o=[];if(!i){o=e.split(".");e=o.shift();k=new RegExp("(^|\\.)"+c.map(o.slice(0).sort(),db).join("\\.(?:.*\\.)?")+"(\\.|$)")}if(r=C[e])if(d){n=c.event.special[e]||{};for(B=f||0;B<r.length;B++){u=r[B];if(d.guid===u.guid){if(i||k.test(u.namespace)){f==null&&r.splice(B--,1);n.remove&&n.remove.call(a,u)}if(f!=
+null)break}}if(r.length===0||f!=null&&r.length===1){if(!n.teardown||n.teardown.call(a,o)===false)Ca(a,e,z.handle);delete C[e]}}else for(var B=0;B<r.length;B++){u=r[B];if(i||k.test(u.namespace)){c.event.remove(a,n,u.handler,B);r.splice(B--,1)}}}if(c.isEmptyObject(C)){if(b=z.handle)b.elem=null;delete z.events;delete z.handle;c.isEmptyObject(z)&&c.removeData(a)}}}}},trigger:function(a,b,d,f){var e=a.type||a;if(!f){a=typeof a==="object"?a[G]?a:c.extend(c.Event(e),a):c.Event(e);if(e.indexOf("!")>=0){a.type=
+e=e.slice(0,-1);a.exclusive=true}if(!d){a.stopPropagation();c.event.global[e]&&c.each(c.cache,function(){this.events&&this.events[e]&&c.event.trigger(a,b,this.handle.elem)})}if(!d||d.nodeType===3||d.nodeType===8)return w;a.result=w;a.target=d;b=c.makeArray(b);b.unshift(a)}a.currentTarget=d;(f=c.data(d,"handle"))&&f.apply(d,b);f=d.parentNode||d.ownerDocument;try{if(!(d&&d.nodeName&&c.noData[d.nodeName.toLowerCase()]))if(d["on"+e]&&d["on"+e].apply(d,b)===false)a.result=false}catch(j){}if(!a.isPropagationStopped()&&
+f)c.event.trigger(a,b,f,true);else if(!a.isDefaultPrevented()){f=a.target;var i,o=c.nodeName(f,"a")&&e==="click",k=c.event.special[e]||{};if((!k._default||k._default.call(d,a)===false)&&!o&&!(f&&f.nodeName&&c.noData[f.nodeName.toLowerCase()])){try{if(f[e]){if(i=f["on"+e])f["on"+e]=null;c.event.triggered=true;f[e]()}}catch(n){}if(i)f["on"+e]=i;c.event.triggered=false}}},handle:function(a){var b,d,f,e;a=arguments[0]=c.event.fix(a||A.event);a.currentTarget=this;b=a.type.indexOf(".")<0&&!a.exclusive;
+if(!b){d=a.type.split(".");a.type=d.shift();f=new RegExp("(^|\\.)"+d.slice(0).sort().join("\\.(?:.*\\.)?")+"(\\.|$)")}e=c.data(this,"events");d=e[a.type];if(e&&d){d=d.slice(0);e=0;for(var j=d.length;e<j;e++){var i=d[e];if(b||f.test(i.namespace)){a.handler=i.handler;a.data=i.data;a.handleObj=i;i=i.handler.apply(this,arguments);if(i!==w){a.result=i;if(i===false){a.preventDefault();a.stopPropagation()}}if(a.isImmediatePropagationStopped())break}}}return a.result},props:"altKey attrChange attrName bubbles button cancelable charCode clientX clientY ctrlKey currentTarget data detail eventPhase fromElement handler keyCode layerX layerY metaKey newValue offsetX offsetY originalTarget pageX pageY prevValue relatedNode relatedTarget screenX screenY shiftKey srcElement target toElement view wheelDelta which".split(" "),
+fix:function(a){if(a[G])return a;var b=a;a=c.Event(b);for(var d=this.props.length,f;d;){f=this.props[--d];a[f]=b[f]}if(!a.target)a.target=a.srcElement||s;if(a.target.nodeType===3)a.target=a.target.parentNode;if(!a.relatedTarget&&a.fromElement)a.relatedTarget=a.fromElement===a.target?a.toElement:a.fromElement;if(a.pageX==null&&a.clientX!=null){b=s.documentElement;d=s.body;a.pageX=a.clientX+(b&&b.scrollLeft||d&&d.scrollLeft||0)-(b&&b.clientLeft||d&&d.clientLeft||0);a.pageY=a.clientY+(b&&b.scrollTop||
+d&&d.scrollTop||0)-(b&&b.clientTop||d&&d.clientTop||0)}if(!a.which&&(a.charCode||a.charCode===0?a.charCode:a.keyCode))a.which=a.charCode||a.keyCode;if(!a.metaKey&&a.ctrlKey)a.metaKey=a.ctrlKey;if(!a.which&&a.button!==w)a.which=a.button&1?1:a.button&2?3:a.button&4?2:0;return a},guid:1E8,proxy:c.proxy,special:{ready:{setup:c.bindReady,teardown:c.noop},live:{add:function(a){c.event.add(this,a.origType,c.extend({},a,{handler:oa}))},remove:function(a){var b=true,d=a.origType.replace(O,"");c.each(c.data(this,
+"events").live||[],function(){if(d===this.origType.replace(O,""))return b=false});b&&c.event.remove(this,a.origType,oa)}},beforeunload:{setup:function(a,b,d){if(this.setInterval)this.onbeforeunload=d;return false},teardown:function(a,b){if(this.onbeforeunload===b)this.onbeforeunload=null}}}};var Ca=s.removeEventListener?function(a,b,d){a.removeEventListener(b,d,false)}:function(a,b,d){a.detachEvent("on"+b,d)};c.Event=function(a){if(!this.preventDefault)return new c.Event(a);if(a&&a.type){this.originalEvent=
+a;this.type=a.type}else this.type=a;this.timeStamp=J();this[G]=true};c.Event.prototype={preventDefault:function(){this.isDefaultPrevented=Z;var a=this.originalEvent;if(a){a.preventDefault&&a.preventDefault();a.returnValue=false}},stopPropagation:function(){this.isPropagationStopped=Z;var a=this.originalEvent;if(a){a.stopPropagation&&a.stopPropagation();a.cancelBubble=true}},stopImmediatePropagation:function(){this.isImmediatePropagationStopped=Z;this.stopPropagation()},isDefaultPrevented:Y,isPropagationStopped:Y,
+isImmediatePropagationStopped:Y};var Da=function(a){var b=a.relatedTarget;try{for(;b&&b!==this;)b=b.parentNode;if(b!==this){a.type=a.data;c.event.handle.apply(this,arguments)}}catch(d){}},Ea=function(a){a.type=a.data;c.event.handle.apply(this,arguments)};c.each({mouseenter:"mouseover",mouseleave:"mouseout"},function(a,b){c.event.special[a]={setup:function(d){c.event.add(this,b,d&&d.selector?Ea:Da,a)},teardown:function(d){c.event.remove(this,b,d&&d.selector?Ea:Da)}}});if(!c.support.submitBubbles)c.event.special.submit=
+{setup:function(){if(this.nodeName.toLowerCase()!=="form"){c.event.add(this,"click.specialSubmit",function(a){var b=a.target,d=b.type;if((d==="submit"||d==="image")&&c(b).closest("form").length)return na("submit",this,arguments)});c.event.add(this,"keypress.specialSubmit",function(a){var b=a.target,d=b.type;if((d==="text"||d==="password")&&c(b).closest("form").length&&a.keyCode===13)return na("submit",this,arguments)})}else return false},teardown:function(){c.event.remove(this,".specialSubmit")}};
+if(!c.support.changeBubbles){var da=/textarea|input|select/i,ea,Fa=function(a){var b=a.type,d=a.value;if(b==="radio"||b==="checkbox")d=a.checked;else if(b==="select-multiple")d=a.selectedIndex>-1?c.map(a.options,function(f){return f.selected}).join("-"):"";else if(a.nodeName.toLowerCase()==="select")d=a.selectedIndex;return d},fa=function(a,b){var d=a.target,f,e;if(!(!da.test(d.nodeName)||d.readOnly)){f=c.data(d,"_change_data");e=Fa(d);if(a.type!=="focusout"||d.type!=="radio")c.data(d,"_change_data",
+e);if(!(f===w||e===f))if(f!=null||e){a.type="change";return c.event.trigger(a,b,d)}}};c.event.special.change={filters:{focusout:fa,click:function(a){var b=a.target,d=b.type;if(d==="radio"||d==="checkbox"||b.nodeName.toLowerCase()==="select")return fa.call(this,a)},keydown:function(a){var b=a.target,d=b.type;if(a.keyCode===13&&b.nodeName.toLowerCase()!=="textarea"||a.keyCode===32&&(d==="checkbox"||d==="radio")||d==="select-multiple")return fa.call(this,a)},beforeactivate:function(a){a=a.target;c.data(a,
+"_change_data",Fa(a))}},setup:function(){if(this.type==="file")return false;for(var a in ea)c.event.add(this,a+".specialChange",ea[a]);return da.test(this.nodeName)},teardown:function(){c.event.remove(this,".specialChange");return da.test(this.nodeName)}};ea=c.event.special.change.filters}s.addEventListener&&c.each({focus:"focusin",blur:"focusout"},function(a,b){function d(f){f=c.event.fix(f);f.type=b;return c.event.handle.call(this,f)}c.event.special[b]={setup:function(){this.addEventListener(a,
+d,true)},teardown:function(){this.removeEventListener(a,d,true)}}});c.each(["bind","one"],function(a,b){c.fn[b]=function(d,f,e){if(typeof d==="object"){for(var j in d)this[b](j,f,d[j],e);return this}if(c.isFunction(f)){e=f;f=w}var i=b==="one"?c.proxy(e,function(k){c(this).unbind(k,i);return e.apply(this,arguments)}):e;if(d==="unload"&&b!=="one")this.one(d,f,e);else{j=0;for(var o=this.length;j<o;j++)c.event.add(this[j],d,i,f)}return this}});c.fn.extend({unbind:function(a,b){if(typeof a==="object"&&
+!a.preventDefault)for(var d in a)this.unbind(d,a[d]);else{d=0;for(var f=this.length;d<f;d++)c.event.remove(this[d],a,b)}return this},delegate:function(a,b,d,f){return this.live(b,d,f,a)},undelegate:function(a,b,d){return arguments.length===0?this.unbind("live"):this.die(b,null,d,a)},trigger:function(a,b){return this.each(function(){c.event.trigger(a,b,this)})},triggerHandler:function(a,b){if(this[0]){a=c.Event(a);a.preventDefault();a.stopPropagation();c.event.trigger(a,b,this[0]);return a.result}},
+toggle:function(a){for(var b=arguments,d=1;d<b.length;)c.proxy(a,b[d++]);return this.click(c.proxy(a,function(f){var e=(c.data(this,"lastToggle"+a.guid)||0)%d;c.data(this,"lastToggle"+a.guid,e+1);f.preventDefault();return b[e].apply(this,arguments)||false}))},hover:function(a,b){return this.mouseenter(a).mouseleave(b||a)}});var Ga={focus:"focusin",blur:"focusout",mouseenter:"mouseover",mouseleave:"mouseout"};c.each(["live","die"],function(a,b){c.fn[b]=function(d,f,e,j){var i,o=0,k,n,r=j||this.selector,
+u=j?this:c(this.context);if(c.isFunction(f)){e=f;f=w}for(d=(d||"").split(" ");(i=d[o++])!=null;){j=O.exec(i);k="";if(j){k=j[0];i=i.replace(O,"")}if(i==="hover")d.push("mouseenter"+k,"mouseleave"+k);else{n=i;if(i==="focus"||i==="blur"){d.push(Ga[i]+k);i+=k}else i=(Ga[i]||i)+k;b==="live"?u.each(function(){c.event.add(this,pa(i,r),{data:f,selector:r,handler:e,origType:i,origHandler:e,preType:n})}):u.unbind(pa(i,r),e)}}return this}});c.each("blur focus focusin focusout load resize scroll unload click dblclick mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave change select submit keydown keypress keyup error".split(" "),
+function(a,b){c.fn[b]=function(d){return d?this.bind(b,d):this.trigger(b)};if(c.attrFn)c.attrFn[b]=true});A.attachEvent&&!A.addEventListener&&A.attachEvent("onunload",function(){for(var a in c.cache)if(c.cache[a].handle)try{c.event.remove(c.cache[a].handle.elem)}catch(b){}});(function(){function a(g){for(var h="",l,m=0;g[m];m++){l=g[m];if(l.nodeType===3||l.nodeType===4)h+=l.nodeValue;else if(l.nodeType!==8)h+=a(l.childNodes)}return h}function b(g,h,l,m,q,p){q=0;for(var v=m.length;q<v;q++){var t=m[q];
+if(t){t=t[g];for(var y=false;t;){if(t.sizcache===l){y=m[t.sizset];break}if(t.nodeType===1&&!p){t.sizcache=l;t.sizset=q}if(t.nodeName.toLowerCase()===h){y=t;break}t=t[g]}m[q]=y}}}function d(g,h,l,m,q,p){q=0;for(var v=m.length;q<v;q++){var t=m[q];if(t){t=t[g];for(var y=false;t;){if(t.sizcache===l){y=m[t.sizset];break}if(t.nodeType===1){if(!p){t.sizcache=l;t.sizset=q}if(typeof h!=="string"){if(t===h){y=true;break}}else if(k.filter(h,[t]).length>0){y=t;break}}t=t[g]}m[q]=y}}}var f=/((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|['"][^'"]*['"]|[^[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
+e=0,j=Object.prototype.toString,i=false,o=true;[0,0].sort(function(){o=false;return 0});var k=function(g,h,l,m){l=l||[];var q=h=h||s;if(h.nodeType!==1&&h.nodeType!==9)return[];if(!g||typeof g!=="string")return l;for(var p=[],v,t,y,S,H=true,M=x(h),I=g;(f.exec(""),v=f.exec(I))!==null;){I=v[3];p.push(v[1]);if(v[2]){S=v[3];break}}if(p.length>1&&r.exec(g))if(p.length===2&&n.relative[p[0]])t=ga(p[0]+p[1],h);else for(t=n.relative[p[0]]?[h]:k(p.shift(),h);p.length;){g=p.shift();if(n.relative[g])g+=p.shift();
+t=ga(g,t)}else{if(!m&&p.length>1&&h.nodeType===9&&!M&&n.match.ID.test(p[0])&&!n.match.ID.test(p[p.length-1])){v=k.find(p.shift(),h,M);h=v.expr?k.filter(v.expr,v.set)[0]:v.set[0]}if(h){v=m?{expr:p.pop(),set:z(m)}:k.find(p.pop(),p.length===1&&(p[0]==="~"||p[0]==="+")&&h.parentNode?h.parentNode:h,M);t=v.expr?k.filter(v.expr,v.set):v.set;if(p.length>0)y=z(t);else H=false;for(;p.length;){var D=p.pop();v=D;if(n.relative[D])v=p.pop();else D="";if(v==null)v=h;n.relative[D](y,v,M)}}else y=[]}y||(y=t);y||k.error(D||
+g);if(j.call(y)==="[object Array]")if(H)if(h&&h.nodeType===1)for(g=0;y[g]!=null;g++){if(y[g]&&(y[g]===true||y[g].nodeType===1&&E(h,y[g])))l.push(t[g])}else for(g=0;y[g]!=null;g++)y[g]&&y[g].nodeType===1&&l.push(t[g]);else l.push.apply(l,y);else z(y,l);if(S){k(S,q,l,m);k.uniqueSort(l)}return l};k.uniqueSort=function(g){if(B){i=o;g.sort(B);if(i)for(var h=1;h<g.length;h++)g[h]===g[h-1]&&g.splice(h--,1)}return g};k.matches=function(g,h){return k(g,null,null,h)};k.find=function(g,h,l){var m,q;if(!g)return[];
+for(var p=0,v=n.order.length;p<v;p++){var t=n.order[p];if(q=n.leftMatch[t].exec(g)){var y=q[1];q.splice(1,1);if(y.substr(y.length-1)!=="\\"){q[1]=(q[1]||"").replace(/\\/g,"");m=n.find[t](q,h,l);if(m!=null){g=g.replace(n.match[t],"");break}}}}m||(m=h.getElementsByTagName("*"));return{set:m,expr:g}};k.filter=function(g,h,l,m){for(var q=g,p=[],v=h,t,y,S=h&&h[0]&&x(h[0]);g&&h.length;){for(var H in n.filter)if((t=n.leftMatch[H].exec(g))!=null&&t[2]){var M=n.filter[H],I,D;D=t[1];y=false;t.splice(1,1);if(D.substr(D.length-
+1)!=="\\"){if(v===p)p=[];if(n.preFilter[H])if(t=n.preFilter[H](t,v,l,p,m,S)){if(t===true)continue}else y=I=true;if(t)for(var U=0;(D=v[U])!=null;U++)if(D){I=M(D,t,U,v);var Ha=m^!!I;if(l&&I!=null)if(Ha)y=true;else v[U]=false;else if(Ha){p.push(D);y=true}}if(I!==w){l||(v=p);g=g.replace(n.match[H],"");if(!y)return[];break}}}if(g===q)if(y==null)k.error(g);else break;q=g}return v};k.error=function(g){throw"Syntax error, unrecognized expression: "+g;};var n=k.selectors={order:["ID","NAME","TAG"],match:{ID:/#((?:[\w\u00c0-\uFFFF-]|\\.)+)/,
+CLASS:/\.((?:[\w\u00c0-\uFFFF-]|\\.)+)/,NAME:/\[name=['"]*((?:[\w\u00c0-\uFFFF-]|\\.)+)['"]*\]/,ATTR:/\[\s*((?:[\w\u00c0-\uFFFF-]|\\.)+)\s*(?:(\S?=)\s*(['"]*)(.*?)\3|)\s*\]/,TAG:/^((?:[\w\u00c0-\uFFFF\*-]|\\.)+)/,CHILD:/:(only|nth|last|first)-child(?:\((even|odd|[\dn+-]*)\))?/,POS:/:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^-]|$)/,PSEUDO:/:((?:[\w\u00c0-\uFFFF-]|\\.)+)(?:\((['"]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/},leftMatch:{},attrMap:{"class":"className","for":"htmlFor"},attrHandle:{href:function(g){return g.getAttribute("href")}},
+relative:{"+":function(g,h){var l=typeof h==="string",m=l&&!/\W/.test(h);l=l&&!m;if(m)h=h.toLowerCase();m=0;for(var q=g.length,p;m<q;m++)if(p=g[m]){for(;(p=p.previousSibling)&&p.nodeType!==1;);g[m]=l||p&&p.nodeName.toLowerCase()===h?p||false:p===h}l&&k.filter(h,g,true)},">":function(g,h){var l=typeof h==="string";if(l&&!/\W/.test(h)){h=h.toLowerCase();for(var m=0,q=g.length;m<q;m++){var p=g[m];if(p){l=p.parentNode;g[m]=l.nodeName.toLowerCase()===h?l:false}}}else{m=0;for(q=g.length;m<q;m++)if(p=g[m])g[m]=
+l?p.parentNode:p.parentNode===h;l&&k.filter(h,g,true)}},"":function(g,h,l){var m=e++,q=d;if(typeof h==="string"&&!/\W/.test(h)){var p=h=h.toLowerCase();q=b}q("parentNode",h,m,g,p,l)},"~":function(g,h,l){var m=e++,q=d;if(typeof h==="string"&&!/\W/.test(h)){var p=h=h.toLowerCase();q=b}q("previousSibling",h,m,g,p,l)}},find:{ID:function(g,h,l){if(typeof h.getElementById!=="undefined"&&!l)return(g=h.getElementById(g[1]))?[g]:[]},NAME:function(g,h){if(typeof h.getElementsByName!=="undefined"){var l=[];
+h=h.getElementsByName(g[1]);for(var m=0,q=h.length;m<q;m++)h[m].getAttribute("name")===g[1]&&l.push(h[m]);return l.length===0?null:l}},TAG:function(g,h){return h.getElementsByTagName(g[1])}},preFilter:{CLASS:function(g,h,l,m,q,p){g=" "+g[1].replace(/\\/g,"")+" ";if(p)return g;p=0;for(var v;(v=h[p])!=null;p++)if(v)if(q^(v.className&&(" "+v.className+" ").replace(/[\t\n]/g," ").indexOf(g)>=0))l||m.push(v);else if(l)h[p]=false;return false},ID:function(g){return g[1].replace(/\\/g,"")},TAG:function(g){return g[1].toLowerCase()},
+CHILD:function(g){if(g[1]==="nth"){var h=/(-?)(\d*)n((?:\+|-)?\d*)/.exec(g[2]==="even"&&"2n"||g[2]==="odd"&&"2n+1"||!/\D/.test(g[2])&&"0n+"+g[2]||g[2]);g[2]=h[1]+(h[2]||1)-0;g[3]=h[3]-0}g[0]=e++;return g},ATTR:function(g,h,l,m,q,p){h=g[1].replace(/\\/g,"");if(!p&&n.attrMap[h])g[1]=n.attrMap[h];if(g[2]==="~=")g[4]=" "+g[4]+" ";return g},PSEUDO:function(g,h,l,m,q){if(g[1]==="not")if((f.exec(g[3])||"").length>1||/^\w/.test(g[3]))g[3]=k(g[3],null,null,h);else{g=k.filter(g[3],h,l,true^q);l||m.push.apply(m,
+g);return false}else if(n.match.POS.test(g[0])||n.match.CHILD.test(g[0]))return true;return g},POS:function(g){g.unshift(true);return g}},filters:{enabled:function(g){return g.disabled===false&&g.type!=="hidden"},disabled:function(g){return g.disabled===true},checked:function(g){return g.checked===true},selected:function(g){return g.selected===true},parent:function(g){return!!g.firstChild},empty:function(g){return!g.firstChild},has:function(g,h,l){return!!k(l[3],g).length},header:function(g){return/h\d/i.test(g.nodeName)},
+text:function(g){return"text"===g.type},radio:function(g){return"radio"===g.type},checkbox:function(g){return"checkbox"===g.type},file:function(g){return"file"===g.type},password:function(g){return"password"===g.type},submit:function(g){return"submit"===g.type},image:function(g){return"image"===g.type},reset:function(g){return"reset"===g.type},button:function(g){return"button"===g.type||g.nodeName.toLowerCase()==="button"},input:function(g){return/input|select|textarea|button/i.test(g.nodeName)}},
+setFilters:{first:function(g,h){return h===0},last:function(g,h,l,m){return h===m.length-1},even:function(g,h){return h%2===0},odd:function(g,h){return h%2===1},lt:function(g,h,l){return h<l[3]-0},gt:function(g,h,l){return h>l[3]-0},nth:function(g,h,l){return l[3]-0===h},eq:function(g,h,l){return l[3]-0===h}},filter:{PSEUDO:function(g,h,l,m){var q=h[1],p=n.filters[q];if(p)return p(g,l,h,m);else if(q==="contains")return(g.textContent||g.innerText||a([g])||"").indexOf(h[3])>=0;else if(q==="not"){h=
+h[3];l=0;for(m=h.length;l<m;l++)if(h[l]===g)return false;return true}else k.error("Syntax error, unrecognized expression: "+q)},CHILD:function(g,h){var l=h[1],m=g;switch(l){case "only":case "first":for(;m=m.previousSibling;)if(m.nodeType===1)return false;if(l==="first")return true;m=g;case "last":for(;m=m.nextSibling;)if(m.nodeType===1)return false;return true;case "nth":l=h[2];var q=h[3];if(l===1&&q===0)return true;h=h[0];var p=g.parentNode;if(p&&(p.sizcache!==h||!g.nodeIndex)){var v=0;for(m=p.firstChild;m;m=
+m.nextSibling)if(m.nodeType===1)m.nodeIndex=++v;p.sizcache=h}g=g.nodeIndex-q;return l===0?g===0:g%l===0&&g/l>=0}},ID:function(g,h){return g.nodeType===1&&g.getAttribute("id")===h},TAG:function(g,h){return h==="*"&&g.nodeType===1||g.nodeName.toLowerCase()===h},CLASS:function(g,h){return(" "+(g.className||g.getAttribute("class"))+" ").indexOf(h)>-1},ATTR:function(g,h){var l=h[1];g=n.attrHandle[l]?n.attrHandle[l](g):g[l]!=null?g[l]:g.getAttribute(l);l=g+"";var m=h[2];h=h[4];return g==null?m==="!=":m===
+"="?l===h:m==="*="?l.indexOf(h)>=0:m==="~="?(" "+l+" ").indexOf(h)>=0:!h?l&&g!==false:m==="!="?l!==h:m==="^="?l.indexOf(h)===0:m==="$="?l.substr(l.length-h.length)===h:m==="|="?l===h||l.substr(0,h.length+1)===h+"-":false},POS:function(g,h,l,m){var q=n.setFilters[h[2]];if(q)return q(g,l,h,m)}}},r=n.match.POS;for(var u in n.match){n.match[u]=new RegExp(n.match[u].source+/(?![^\[]*\])(?![^\(]*\))/.source);n.leftMatch[u]=new RegExp(/(^(?:.|\r|\n)*?)/.source+n.match[u].source.replace(/\\(\d+)/g,function(g,
+h){return"\\"+(h-0+1)}))}var z=function(g,h){g=Array.prototype.slice.call(g,0);if(h){h.push.apply(h,g);return h}return g};try{Array.prototype.slice.call(s.documentElement.childNodes,0)}catch(C){z=function(g,h){h=h||[];if(j.call(g)==="[object Array]")Array.prototype.push.apply(h,g);else if(typeof g.length==="number")for(var l=0,m=g.length;l<m;l++)h.push(g[l]);else for(l=0;g[l];l++)h.push(g[l]);return h}}var B;if(s.documentElement.compareDocumentPosition)B=function(g,h){if(!g.compareDocumentPosition||
+!h.compareDocumentPosition){if(g==h)i=true;return g.compareDocumentPosition?-1:1}g=g.compareDocumentPosition(h)&4?-1:g===h?0:1;if(g===0)i=true;return g};else if("sourceIndex"in s.documentElement)B=function(g,h){if(!g.sourceIndex||!h.sourceIndex){if(g==h)i=true;return g.sourceIndex?-1:1}g=g.sourceIndex-h.sourceIndex;if(g===0)i=true;return g};else if(s.createRange)B=function(g,h){if(!g.ownerDocument||!h.ownerDocument){if(g==h)i=true;return g.ownerDocument?-1:1}var l=g.ownerDocument.createRange(),m=
+h.ownerDocument.createRange();l.setStart(g,0);l.setEnd(g,0);m.setStart(h,0);m.setEnd(h,0);g=l.compareBoundaryPoints(Range.START_TO_END,m);if(g===0)i=true;return g};(function(){var g=s.createElement("div"),h="script"+(new Date).getTime();g.innerHTML="<a name='"+h+"'/>";var l=s.documentElement;l.insertBefore(g,l.firstChild);if(s.getElementById(h)){n.find.ID=function(m,q,p){if(typeof q.getElementById!=="undefined"&&!p)return(q=q.getElementById(m[1]))?q.id===m[1]||typeof q.getAttributeNode!=="undefined"&&
+q.getAttributeNode("id").nodeValue===m[1]?[q]:w:[]};n.filter.ID=function(m,q){var p=typeof m.getAttributeNode!=="undefined"&&m.getAttributeNode("id");return m.nodeType===1&&p&&p.nodeValue===q}}l.removeChild(g);l=g=null})();(function(){var g=s.createElement("div");g.appendChild(s.createComment(""));if(g.getElementsByTagName("*").length>0)n.find.TAG=function(h,l){l=l.getElementsByTagName(h[1]);if(h[1]==="*"){h=[];for(var m=0;l[m];m++)l[m].nodeType===1&&h.push(l[m]);l=h}return l};g.innerHTML="<a href='#'></a>";
+if(g.firstChild&&typeof g.firstChild.getAttribute!=="undefined"&&g.firstChild.getAttribute("href")!=="#")n.attrHandle.href=function(h){return h.getAttribute("href",2)};g=null})();s.querySelectorAll&&function(){var g=k,h=s.createElement("div");h.innerHTML="<p class='TEST'></p>";if(!(h.querySelectorAll&&h.querySelectorAll(".TEST").length===0)){k=function(m,q,p,v){q=q||s;if(!v&&q.nodeType===9&&!x(q))try{return z(q.querySelectorAll(m),p)}catch(t){}return g(m,q,p,v)};for(var l in g)k[l]=g[l];h=null}}();
+(function(){var g=s.createElement("div");g.innerHTML="<div class='test e'></div><div class='test'></div>";if(!(!g.getElementsByClassName||g.getElementsByClassName("e").length===0)){g.lastChild.className="e";if(g.getElementsByClassName("e").length!==1){n.order.splice(1,0,"CLASS");n.find.CLASS=function(h,l,m){if(typeof l.getElementsByClassName!=="undefined"&&!m)return l.getElementsByClassName(h[1])};g=null}}})();var E=s.compareDocumentPosition?function(g,h){return!!(g.compareDocumentPosition(h)&16)}:
+function(g,h){return g!==h&&(g.contains?g.contains(h):true)},x=function(g){return(g=(g?g.ownerDocument||g:0).documentElement)?g.nodeName!=="HTML":false},ga=function(g,h){var l=[],m="",q;for(h=h.nodeType?[h]:h;q=n.match.PSEUDO.exec(g);){m+=q[0];g=g.replace(n.match.PSEUDO,"")}g=n.relative[g]?g+"*":g;q=0;for(var p=h.length;q<p;q++)k(g,h[q],l);return k.filter(m,l)};c.find=k;c.expr=k.selectors;c.expr[":"]=c.expr.filters;c.unique=k.uniqueSort;c.text=a;c.isXMLDoc=x;c.contains=E})();var eb=/Until$/,fb=/^(?:parents|prevUntil|prevAll)/,
+gb=/,/;R=Array.prototype.slice;var Ia=function(a,b,d){if(c.isFunction(b))return c.grep(a,function(e,j){return!!b.call(e,j,e)===d});else if(b.nodeType)return c.grep(a,function(e){return e===b===d});else if(typeof b==="string"){var f=c.grep(a,function(e){return e.nodeType===1});if(Ua.test(b))return c.filter(b,f,!d);else b=c.filter(b,f)}return c.grep(a,function(e){return c.inArray(e,b)>=0===d})};c.fn.extend({find:function(a){for(var b=this.pushStack("","find",a),d=0,f=0,e=this.length;f<e;f++){d=b.length;
+c.find(a,this[f],b);if(f>0)for(var j=d;j<b.length;j++)for(var i=0;i<d;i++)if(b[i]===b[j]){b.splice(j--,1);break}}return b},has:function(a){var b=c(a);return this.filter(function(){for(var d=0,f=b.length;d<f;d++)if(c.contains(this,b[d]))return true})},not:function(a){return this.pushStack(Ia(this,a,false),"not",a)},filter:function(a){return this.pushStack(Ia(this,a,true),"filter",a)},is:function(a){return!!a&&c.filter(a,this).length>0},closest:function(a,b){if(c.isArray(a)){var d=[],f=this[0],e,j=
+{},i;if(f&&a.length){e=0;for(var o=a.length;e<o;e++){i=a[e];j[i]||(j[i]=c.expr.match.POS.test(i)?c(i,b||this.context):i)}for(;f&&f.ownerDocument&&f!==b;){for(i in j){e=j[i];if(e.jquery?e.index(f)>-1:c(f).is(e)){d.push({selector:i,elem:f});delete j[i]}}f=f.parentNode}}return d}var k=c.expr.match.POS.test(a)?c(a,b||this.context):null;return this.map(function(n,r){for(;r&&r.ownerDocument&&r!==b;){if(k?k.index(r)>-1:c(r).is(a))return r;r=r.parentNode}return null})},index:function(a){if(!a||typeof a===
+"string")return c.inArray(this[0],a?c(a):this.parent().children());return c.inArray(a.jquery?a[0]:a,this)},add:function(a,b){a=typeof a==="string"?c(a,b||this.context):c.makeArray(a);b=c.merge(this.get(),a);return this.pushStack(qa(a[0])||qa(b[0])?b:c.unique(b))},andSelf:function(){return this.add(this.prevObject)}});c.each({parent:function(a){return(a=a.parentNode)&&a.nodeType!==11?a:null},parents:function(a){return c.dir(a,"parentNode")},parentsUntil:function(a,b,d){return c.dir(a,"parentNode",
+d)},next:function(a){return c.nth(a,2,"nextSibling")},prev:function(a){return c.nth(a,2,"previousSibling")},nextAll:function(a){return c.dir(a,"nextSibling")},prevAll:function(a){return c.dir(a,"previousSibling")},nextUntil:function(a,b,d){return c.dir(a,"nextSibling",d)},prevUntil:function(a,b,d){return c.dir(a,"previousSibling",d)},siblings:function(a){return c.sibling(a.parentNode.firstChild,a)},children:function(a){return c.sibling(a.firstChild)},contents:function(a){return c.nodeName(a,"iframe")?
+a.contentDocument||a.contentWindow.document:c.makeArray(a.childNodes)}},function(a,b){c.fn[a]=function(d,f){var e=c.map(this,b,d);eb.test(a)||(f=d);if(f&&typeof f==="string")e=c.filter(f,e);e=this.length>1?c.unique(e):e;if((this.length>1||gb.test(f))&&fb.test(a))e=e.reverse();return this.pushStack(e,a,R.call(arguments).join(","))}});c.extend({filter:function(a,b,d){if(d)a=":not("+a+")";return c.find.matches(a,b)},dir:function(a,b,d){var f=[];for(a=a[b];a&&a.nodeType!==9&&(d===w||a.nodeType!==1||!c(a).is(d));){a.nodeType===
+1&&f.push(a);a=a[b]}return f},nth:function(a,b,d){b=b||1;for(var f=0;a;a=a[d])if(a.nodeType===1&&++f===b)break;return a},sibling:function(a,b){for(var d=[];a;a=a.nextSibling)a.nodeType===1&&a!==b&&d.push(a);return d}});var Ja=/ jQuery\d+="(?:\d+|null)"/g,V=/^\s+/,Ka=/(<([\w:]+)[^>]*?)\/>/g,hb=/^(?:area|br|col|embed|hr|img|input|link|meta|param)$/i,La=/<([\w:]+)/,ib=/<tbody/i,jb=/<|&#?\w+;/,ta=/<script|<object|<embed|<option|<style/i,ua=/checked\s*(?:[^=]|=\s*.checked.)/i,Ma=function(a,b,d){return hb.test(d)?
+a:b+"></"+d+">"},F={option:[1,"<select multiple='multiple'>","</select>"],legend:[1,"<fieldset>","</fieldset>"],thead:[1,"<table>","</table>"],tr:[2,"<table><tbody>","</tbody></table>"],td:[3,"<table><tbody><tr>","</tr></tbody></table>"],col:[2,"<table><tbody></tbody><colgroup>","</colgroup></table>"],area:[1,"<map>","</map>"],_default:[0,"",""]};F.optgroup=F.option;F.tbody=F.tfoot=F.colgroup=F.caption=F.thead;F.th=F.td;if(!c.support.htmlSerialize)F._default=[1,"div<div>","</div>"];c.fn.extend({text:function(a){if(c.isFunction(a))return this.each(function(b){var d=
+c(this);d.text(a.call(this,b,d.text()))});if(typeof a!=="object"&&a!==w)return this.empty().append((this[0]&&this[0].ownerDocument||s).createTextNode(a));return c.text(this)},wrapAll:function(a){if(c.isFunction(a))return this.each(function(d){c(this).wrapAll(a.call(this,d))});if(this[0]){var b=c(a,this[0].ownerDocument).eq(0).clone(true);this[0].parentNode&&b.insertBefore(this[0]);b.map(function(){for(var d=this;d.firstChild&&d.firstChild.nodeType===1;)d=d.firstChild;return d}).append(this)}return this},
+wrapInner:function(a){if(c.isFunction(a))return this.each(function(b){c(this).wrapInner(a.call(this,b))});return this.each(function(){var b=c(this),d=b.contents();d.length?d.wrapAll(a):b.append(a)})},wrap:function(a){return this.each(function(){c(this).wrapAll(a)})},unwrap:function(){return this.parent().each(function(){c.nodeName(this,"body")||c(this).replaceWith(this.childNodes)}).end()},append:function(){return this.domManip(arguments,true,function(a){this.nodeType===1&&this.appendChild(a)})},
+prepend:function(){return this.domManip(arguments,true,function(a){this.nodeType===1&&this.insertBefore(a,this.firstChild)})},before:function(){if(this[0]&&this[0].parentNode)return this.domManip(arguments,false,function(b){this.parentNode.insertBefore(b,this)});else if(arguments.length){var a=c(arguments[0]);a.push.apply(a,this.toArray());return this.pushStack(a,"before",arguments)}},after:function(){if(this[0]&&this[0].parentNode)return this.domManip(arguments,false,function(b){this.parentNode.insertBefore(b,
+this.nextSibling)});else if(arguments.length){var a=this.pushStack(this,"after",arguments);a.push.apply(a,c(arguments[0]).toArray());return a}},remove:function(a,b){for(var d=0,f;(f=this[d])!=null;d++)if(!a||c.filter(a,[f]).length){if(!b&&f.nodeType===1){c.cleanData(f.getElementsByTagName("*"));c.cleanData([f])}f.parentNode&&f.parentNode.removeChild(f)}return this},empty:function(){for(var a=0,b;(b=this[a])!=null;a++)for(b.nodeType===1&&c.cleanData(b.getElementsByTagName("*"));b.firstChild;)b.removeChild(b.firstChild);
+return this},clone:function(a){var b=this.map(function(){if(!c.support.noCloneEvent&&!c.isXMLDoc(this)){var d=this.outerHTML,f=this.ownerDocument;if(!d){d=f.createElement("div");d.appendChild(this.cloneNode(true));d=d.innerHTML}return c.clean([d.replace(Ja,"").replace(/=([^="'>\s]+\/)>/g,'="$1">').replace(V,"")],f)[0]}else return this.cloneNode(true)});if(a===true){ra(this,b);ra(this.find("*"),b.find("*"))}return b},html:function(a){if(a===w)return this[0]&&this[0].nodeType===1?this[0].innerHTML.replace(Ja,
+""):null;else if(typeof a==="string"&&!ta.test(a)&&(c.support.leadingWhitespace||!V.test(a))&&!F[(La.exec(a)||["",""])[1].toLowerCase()]){a=a.replace(Ka,Ma);try{for(var b=0,d=this.length;b<d;b++)if(this[b].nodeType===1){c.cleanData(this[b].getElementsByTagName("*"));this[b].innerHTML=a}}catch(f){this.empty().append(a)}}else c.isFunction(a)?this.each(function(e){var j=c(this),i=j.html();j.empty().append(function(){return a.call(this,e,i)})}):this.empty().append(a);return this},replaceWith:function(a){if(this[0]&&
+this[0].parentNode){if(c.isFunction(a))return this.each(function(b){var d=c(this),f=d.html();d.replaceWith(a.call(this,b,f))});if(typeof a!=="string")a=c(a).detach();return this.each(function(){var b=this.nextSibling,d=this.parentNode;c(this).remove();b?c(b).before(a):c(d).append(a)})}else return this.pushStack(c(c.isFunction(a)?a():a),"replaceWith",a)},detach:function(a){return this.remove(a,true)},domManip:function(a,b,d){function f(u){return c.nodeName(u,"table")?u.getElementsByTagName("tbody")[0]||
+u.appendChild(u.ownerDocument.createElement("tbody")):u}var e,j,i=a[0],o=[],k;if(!c.support.checkClone&&arguments.length===3&&typeof i==="string"&&ua.test(i))return this.each(function(){c(this).domManip(a,b,d,true)});if(c.isFunction(i))return this.each(function(u){var z=c(this);a[0]=i.call(this,u,b?z.html():w);z.domManip(a,b,d)});if(this[0]){e=i&&i.parentNode;e=c.support.parentNode&&e&&e.nodeType===11&&e.childNodes.length===this.length?{fragment:e}:sa(a,this,o);k=e.fragment;if(j=k.childNodes.length===
+1?(k=k.firstChild):k.firstChild){b=b&&c.nodeName(j,"tr");for(var n=0,r=this.length;n<r;n++)d.call(b?f(this[n],j):this[n],n>0||e.cacheable||this.length>1?k.cloneNode(true):k)}o.length&&c.each(o,Qa)}return this}});c.fragments={};c.each({appendTo:"append",prependTo:"prepend",insertBefore:"before",insertAfter:"after",replaceAll:"replaceWith"},function(a,b){c.fn[a]=function(d){var f=[];d=c(d);var e=this.length===1&&this[0].parentNode;if(e&&e.nodeType===11&&e.childNodes.length===1&&d.length===1){d[b](this[0]);
+return this}else{e=0;for(var j=d.length;e<j;e++){var i=(e>0?this.clone(true):this).get();c.fn[b].apply(c(d[e]),i);f=f.concat(i)}return this.pushStack(f,a,d.selector)}}});c.extend({clean:function(a,b,d,f){b=b||s;if(typeof b.createElement==="undefined")b=b.ownerDocument||b[0]&&b[0].ownerDocument||s;for(var e=[],j=0,i;(i=a[j])!=null;j++){if(typeof i==="number")i+="";if(i){if(typeof i==="string"&&!jb.test(i))i=b.createTextNode(i);else if(typeof i==="string"){i=i.replace(Ka,Ma);var o=(La.exec(i)||["",
+""])[1].toLowerCase(),k=F[o]||F._default,n=k[0],r=b.createElement("div");for(r.innerHTML=k[1]+i+k[2];n--;)r=r.lastChild;if(!c.support.tbody){n=ib.test(i);o=o==="table"&&!n?r.firstChild&&r.firstChild.childNodes:k[1]==="<table>"&&!n?r.childNodes:[];for(k=o.length-1;k>=0;--k)c.nodeName(o[k],"tbody")&&!o[k].childNodes.length&&o[k].parentNode.removeChild(o[k])}!c.support.leadingWhitespace&&V.test(i)&&r.insertBefore(b.createTextNode(V.exec(i)[0]),r.firstChild);i=r.childNodes}if(i.nodeType)e.push(i);else e=
+c.merge(e,i)}}if(d)for(j=0;e[j];j++)if(f&&c.nodeName(e[j],"script")&&(!e[j].type||e[j].type.toLowerCase()==="text/javascript"))f.push(e[j].parentNode?e[j].parentNode.removeChild(e[j]):e[j]);else{e[j].nodeType===1&&e.splice.apply(e,[j+1,0].concat(c.makeArray(e[j].getElementsByTagName("script"))));d.appendChild(e[j])}return e},cleanData:function(a){for(var b,d,f=c.cache,e=c.event.special,j=c.support.deleteExpando,i=0,o;(o=a[i])!=null;i++)if(d=o[c.expando]){b=f[d];if(b.events)for(var k in b.events)e[k]?
+c.event.remove(o,k):Ca(o,k,b.handle);if(j)delete o[c.expando];else o.removeAttribute&&o.removeAttribute(c.expando);delete f[d]}}});var kb=/z-?index|font-?weight|opacity|zoom|line-?height/i,Na=/alpha\([^)]*\)/,Oa=/opacity=([^)]*)/,ha=/float/i,ia=/-([a-z])/ig,lb=/([A-Z])/g,mb=/^-?\d+(?:px)?$/i,nb=/^-?\d/,ob={position:"absolute",visibility:"hidden",display:"block"},pb=["Left","Right"],qb=["Top","Bottom"],rb=s.defaultView&&s.defaultView.getComputedStyle,Pa=c.support.cssFloat?"cssFloat":"styleFloat",ja=
+function(a,b){return b.toUpperCase()};c.fn.css=function(a,b){return X(this,a,b,true,function(d,f,e){if(e===w)return c.curCSS(d,f);if(typeof e==="number"&&!kb.test(f))e+="px";c.style(d,f,e)})};c.extend({style:function(a,b,d){if(!a||a.nodeType===3||a.nodeType===8)return w;if((b==="width"||b==="height")&&parseFloat(d)<0)d=w;var f=a.style||a,e=d!==w;if(!c.support.opacity&&b==="opacity"){if(e){f.zoom=1;b=parseInt(d,10)+""==="NaN"?"":"alpha(opacity="+d*100+")";a=f.filter||c.curCSS(a,"filter")||"";f.filter=
+Na.test(a)?a.replace(Na,b):b}return f.filter&&f.filter.indexOf("opacity=")>=0?parseFloat(Oa.exec(f.filter)[1])/100+"":""}if(ha.test(b))b=Pa;b=b.replace(ia,ja);if(e)f[b]=d;return f[b]},css:function(a,b,d,f){if(b==="width"||b==="height"){var e,j=b==="width"?pb:qb;function i(){e=b==="width"?a.offsetWidth:a.offsetHeight;f!=="border"&&c.each(j,function(){f||(e-=parseFloat(c.curCSS(a,"padding"+this,true))||0);if(f==="margin")e+=parseFloat(c.curCSS(a,"margin"+this,true))||0;else e-=parseFloat(c.curCSS(a,
+"border"+this+"Width",true))||0})}a.offsetWidth!==0?i():c.swap(a,ob,i);return Math.max(0,Math.round(e))}return c.curCSS(a,b,d)},curCSS:function(a,b,d){var f,e=a.style;if(!c.support.opacity&&b==="opacity"&&a.currentStyle){f=Oa.test(a.currentStyle.filter||"")?parseFloat(RegExp.$1)/100+"":"";return f===""?"1":f}if(ha.test(b))b=Pa;if(!d&&e&&e[b])f=e[b];else if(rb){if(ha.test(b))b="float";b=b.replace(lb,"-$1").toLowerCase();e=a.ownerDocument.defaultView;if(!e)return null;if(a=e.getComputedStyle(a,null))f=
+a.getPropertyValue(b);if(b==="opacity"&&f==="")f="1"}else if(a.currentStyle){d=b.replace(ia,ja);f=a.currentStyle[b]||a.currentStyle[d];if(!mb.test(f)&&nb.test(f)){b=e.left;var j=a.runtimeStyle.left;a.runtimeStyle.left=a.currentStyle.left;e.left=d==="fontSize"?"1em":f||0;f=e.pixelLeft+"px";e.left=b;a.runtimeStyle.left=j}}return f},swap:function(a,b,d){var f={};for(var e in b){f[e]=a.style[e];a.style[e]=b[e]}d.call(a);for(e in b)a.style[e]=f[e]}});if(c.expr&&c.expr.filters){c.expr.filters.hidden=function(a){var b=
+a.offsetWidth,d=a.offsetHeight,f=a.nodeName.toLowerCase()==="tr";return b===0&&d===0&&!f?true:b>0&&d>0&&!f?false:c.curCSS(a,"display")==="none"};c.expr.filters.visible=function(a){return!c.expr.filters.hidden(a)}}var sb=J(),tb=/<script(.|\s)*?\/script>/gi,ub=/select|textarea/i,vb=/color|date|datetime|email|hidden|month|number|password|range|search|tel|text|time|url|week/i,N=/=\?(&|$)/,ka=/\?/,wb=/(\?|&)_=.*?(&|$)/,xb=/^(\w+:)?\/\/([^\/?#]+)/,yb=/%20/g,zb=c.fn.load;c.fn.extend({load:function(a,b,d){if(typeof a!==
+"string")return zb.call(this,a);else if(!this.length)return this;var f=a.indexOf(" ");if(f>=0){var e=a.slice(f,a.length);a=a.slice(0,f)}f="GET";if(b)if(c.isFunction(b)){d=b;b=null}else if(typeof b==="object"){b=c.param(b,c.ajaxSettings.traditional);f="POST"}var j=this;c.ajax({url:a,type:f,dataType:"html",data:b,complete:function(i,o){if(o==="success"||o==="notmodified")j.html(e?c("<div />").append(i.responseText.replace(tb,"")).find(e):i.responseText);d&&j.each(d,[i.responseText,o,i])}});return this},
+serialize:function(){return c.param(this.serializeArray())},serializeArray:function(){return this.map(function(){return this.elements?c.makeArray(this.elements):this}).filter(function(){return this.name&&!this.disabled&&(this.checked||ub.test(this.nodeName)||vb.test(this.type))}).map(function(a,b){a=c(this).val();return a==null?null:c.isArray(a)?c.map(a,function(d){return{name:b.name,value:d}}):{name:b.name,value:a}}).get()}});c.each("ajaxStart ajaxStop ajaxComplete ajaxError ajaxSuccess ajaxSend".split(" "),
+function(a,b){c.fn[b]=function(d){return this.bind(b,d)}});c.extend({get:function(a,b,d,f){if(c.isFunction(b)){f=f||d;d=b;b=null}return c.ajax({type:"GET",url:a,data:b,success:d,dataType:f})},getScript:function(a,b){return c.get(a,null,b,"script")},getJSON:function(a,b,d){return c.get(a,b,d,"json")},post:function(a,b,d,f){if(c.isFunction(b)){f=f||d;d=b;b={}}return c.ajax({type:"POST",url:a,data:b,success:d,dataType:f})},ajaxSetup:function(a){c.extend(c.ajaxSettings,a)},ajaxSettings:{url:location.href,
+global:true,type:"GET",contentType:"application/x-www-form-urlencoded",processData:true,async:true,xhr:A.XMLHttpRequest&&(A.location.protocol!=="file:"||!A.ActiveXObject)?function(){return new A.XMLHttpRequest}:function(){try{return new A.ActiveXObject("Microsoft.XMLHTTP")}catch(a){}},accepts:{xml:"application/xml, text/xml",html:"text/html",script:"text/javascript, application/javascript",json:"application/json, text/javascript",text:"text/plain",_default:"*/*"}},lastModified:{},etag:{},ajax:function(a){function b(){e.success&&
+e.success.call(k,o,i,x);e.global&&f("ajaxSuccess",[x,e])}function d(){e.complete&&e.complete.call(k,x,i);e.global&&f("ajaxComplete",[x,e]);e.global&&!--c.active&&c.event.trigger("ajaxStop")}function f(q,p){(e.context?c(e.context):c.event).trigger(q,p)}var e=c.extend(true,{},c.ajaxSettings,a),j,i,o,k=a&&a.context||e,n=e.type.toUpperCase();if(e.data&&e.processData&&typeof e.data!=="string")e.data=c.param(e.data,e.traditional);if(e.dataType==="jsonp"){if(n==="GET")N.test(e.url)||(e.url+=(ka.test(e.url)?
+"&":"?")+(e.jsonp||"callback")+"=?");else if(!e.data||!N.test(e.data))e.data=(e.data?e.data+"&":"")+(e.jsonp||"callback")+"=?";e.dataType="json"}if(e.dataType==="json"&&(e.data&&N.test(e.data)||N.test(e.url))){j=e.jsonpCallback||"jsonp"+sb++;if(e.data)e.data=(e.data+"").replace(N,"="+j+"$1");e.url=e.url.replace(N,"="+j+"$1");e.dataType="script";A[j]=A[j]||function(q){o=q;b();d();A[j]=w;try{delete A[j]}catch(p){}z&&z.removeChild(C)}}if(e.dataType==="script"&&e.cache===null)e.cache=false;if(e.cache===
+false&&n==="GET"){var r=J(),u=e.url.replace(wb,"$1_="+r+"$2");e.url=u+(u===e.url?(ka.test(e.url)?"&":"?")+"_="+r:"")}if(e.data&&n==="GET")e.url+=(ka.test(e.url)?"&":"?")+e.data;e.global&&!c.active++&&c.event.trigger("ajaxStart");r=(r=xb.exec(e.url))&&(r[1]&&r[1]!==location.protocol||r[2]!==location.host);if(e.dataType==="script"&&n==="GET"&&r){var z=s.getElementsByTagName("head")[0]||s.documentElement,C=s.createElement("script");C.src=e.url;if(e.scriptCharset)C.charset=e.scriptCharset;if(!j){var B=
+false;C.onload=C.onreadystatechange=function(){if(!B&&(!this.readyState||this.readyState==="loaded"||this.readyState==="complete")){B=true;b();d();C.onload=C.onreadystatechange=null;z&&C.parentNode&&z.removeChild(C)}}}z.insertBefore(C,z.firstChild);return w}var E=false,x=e.xhr();if(x){e.username?x.open(n,e.url,e.async,e.username,e.password):x.open(n,e.url,e.async);try{if(e.data||a&&a.contentType)x.setRequestHeader("Content-Type",e.contentType);if(e.ifModified){c.lastModified[e.url]&&x.setRequestHeader("If-Modified-Since",
+c.lastModified[e.url]);c.etag[e.url]&&x.setRequestHeader("If-None-Match",c.etag[e.url])}r||x.setRequestHeader("X-Requested-With","XMLHttpRequest");x.setRequestHeader("Accept",e.dataType&&e.accepts[e.dataType]?e.accepts[e.dataType]+", */*":e.accepts._default)}catch(ga){}if(e.beforeSend&&e.beforeSend.call(k,x,e)===false){e.global&&!--c.active&&c.event.trigger("ajaxStop");x.abort();return false}e.global&&f("ajaxSend",[x,e]);var g=x.onreadystatechange=function(q){if(!x||x.readyState===0||q==="abort"){E||
+d();E=true;if(x)x.onreadystatechange=c.noop}else if(!E&&x&&(x.readyState===4||q==="timeout")){E=true;x.onreadystatechange=c.noop;i=q==="timeout"?"timeout":!c.httpSuccess(x)?"error":e.ifModified&&c.httpNotModified(x,e.url)?"notmodified":"success";var p;if(i==="success")try{o=c.httpData(x,e.dataType,e)}catch(v){i="parsererror";p=v}if(i==="success"||i==="notmodified")j||b();else c.handleError(e,x,i,p);d();q==="timeout"&&x.abort();if(e.async)x=null}};try{var h=x.abort;x.abort=function(){x&&h.call(x);
+g("abort")}}catch(l){}e.async&&e.timeout>0&&setTimeout(function(){x&&!E&&g("timeout")},e.timeout);try{x.send(n==="POST"||n==="PUT"||n==="DELETE"?e.data:null)}catch(m){c.handleError(e,x,null,m);d()}e.async||g();return x}},handleError:function(a,b,d,f){if(a.error)a.error.call(a.context||a,b,d,f);if(a.global)(a.context?c(a.context):c.event).trigger("ajaxError",[b,a,f])},active:0,httpSuccess:function(a){try{return!a.status&&location.protocol==="file:"||a.status>=200&&a.status<300||a.status===304||a.status===
+1223||a.status===0}catch(b){}return false},httpNotModified:function(a,b){var d=a.getResponseHeader("Last-Modified"),f=a.getResponseHeader("Etag");if(d)c.lastModified[b]=d;if(f)c.etag[b]=f;return a.status===304||a.status===0},httpData:function(a,b,d){var f=a.getResponseHeader("content-type")||"",e=b==="xml"||!b&&f.indexOf("xml")>=0;a=e?a.responseXML:a.responseText;e&&a.documentElement.nodeName==="parsererror"&&c.error("parsererror");if(d&&d.dataFilter)a=d.dataFilter(a,b);if(typeof a==="string")if(b===
+"json"||!b&&f.indexOf("json")>=0)a=c.parseJSON(a);else if(b==="script"||!b&&f.indexOf("javascript")>=0)c.globalEval(a);return a},param:function(a,b){function d(i,o){if(c.isArray(o))c.each(o,function(k,n){b||/\[\]$/.test(i)?f(i,n):d(i+"["+(typeof n==="object"||c.isArray(n)?k:"")+"]",n)});else!b&&o!=null&&typeof o==="object"?c.each(o,function(k,n){d(i+"["+k+"]",n)}):f(i,o)}function f(i,o){o=c.isFunction(o)?o():o;e[e.length]=encodeURIComponent(i)+"="+encodeURIComponent(o)}var e=[];if(b===w)b=c.ajaxSettings.traditional;
+if(c.isArray(a)||a.jquery)c.each(a,function(){f(this.name,this.value)});else for(var j in a)d(j,a[j]);return e.join("&").replace(yb,"+")}});var la={},Ab=/toggle|show|hide/,Bb=/^([+-]=)?([\d+-.]+)(.*)$/,W,va=[["height","marginTop","marginBottom","paddingTop","paddingBottom"],["width","marginLeft","marginRight","paddingLeft","paddingRight"],["opacity"]];c.fn.extend({show:function(a,b){if(a||a===0)return this.animate(K("show",3),a,b);else{a=0;for(b=this.length;a<b;a++){var d=c.data(this[a],"olddisplay");
+this[a].style.display=d||"";if(c.css(this[a],"display")==="none"){d=this[a].nodeName;var f;if(la[d])f=la[d];else{var e=c("<"+d+" />").appendTo("body");f=e.css("display");if(f==="none")f="block";e.remove();la[d]=f}c.data(this[a],"olddisplay",f)}}a=0;for(b=this.length;a<b;a++)this[a].style.display=c.data(this[a],"olddisplay")||"";return this}},hide:function(a,b){if(a||a===0)return this.animate(K("hide",3),a,b);else{a=0;for(b=this.length;a<b;a++){var d=c.data(this[a],"olddisplay");!d&&d!=="none"&&c.data(this[a],
+"olddisplay",c.css(this[a],"display"))}a=0;for(b=this.length;a<b;a++)this[a].style.display="none";return this}},_toggle:c.fn.toggle,toggle:function(a,b){var d=typeof a==="boolean";if(c.isFunction(a)&&c.isFunction(b))this._toggle.apply(this,arguments);else a==null||d?this.each(function(){var f=d?a:c(this).is(":hidden");c(this)[f?"show":"hide"]()}):this.animate(K("toggle",3),a,b);return this},fadeTo:function(a,b,d){return this.filter(":hidden").css("opacity",0).show().end().animate({opacity:b},a,d)},
+animate:function(a,b,d,f){var e=c.speed(b,d,f);if(c.isEmptyObject(a))return this.each(e.complete);return this[e.queue===false?"each":"queue"](function(){var j=c.extend({},e),i,o=this.nodeType===1&&c(this).is(":hidden"),k=this;for(i in a){var n=i.replace(ia,ja);if(i!==n){a[n]=a[i];delete a[i];i=n}if(a[i]==="hide"&&o||a[i]==="show"&&!o)return j.complete.call(this);if((i==="height"||i==="width")&&this.style){j.display=c.css(this,"display");j.overflow=this.style.overflow}if(c.isArray(a[i])){(j.specialEasing=
+j.specialEasing||{})[i]=a[i][1];a[i]=a[i][0]}}if(j.overflow!=null)this.style.overflow="hidden";j.curAnim=c.extend({},a);c.each(a,function(r,u){var z=new c.fx(k,j,r);if(Ab.test(u))z[u==="toggle"?o?"show":"hide":u](a);else{var C=Bb.exec(u),B=z.cur(true)||0;if(C){u=parseFloat(C[2]);var E=C[3]||"px";if(E!=="px"){k.style[r]=(u||1)+E;B=(u||1)/z.cur(true)*B;k.style[r]=B+E}if(C[1])u=(C[1]==="-="?-1:1)*u+B;z.custom(B,u,E)}else z.custom(B,u,"")}});return true})},stop:function(a,b){var d=c.timers;a&&this.queue([]);
+this.each(function(){for(var f=d.length-1;f>=0;f--)if(d[f].elem===this){b&&d[f](true);d.splice(f,1)}});b||this.dequeue();return this}});c.each({slideDown:K("show",1),slideUp:K("hide",1),slideToggle:K("toggle",1),fadeIn:{opacity:"show"},fadeOut:{opacity:"hide"}},function(a,b){c.fn[a]=function(d,f){return this.animate(b,d,f)}});c.extend({speed:function(a,b,d){var f=a&&typeof a==="object"?a:{complete:d||!d&&b||c.isFunction(a)&&a,duration:a,easing:d&&b||b&&!c.isFunction(b)&&b};f.duration=c.fx.off?0:typeof f.duration===
+"number"?f.duration:c.fx.speeds[f.duration]||c.fx.speeds._default;f.old=f.complete;f.complete=function(){f.queue!==false&&c(this).dequeue();c.isFunction(f.old)&&f.old.call(this)};return f},easing:{linear:function(a,b,d,f){return d+f*a},swing:function(a,b,d,f){return(-Math.cos(a*Math.PI)/2+0.5)*f+d}},timers:[],fx:function(a,b,d){this.options=b;this.elem=a;this.prop=d;if(!b.orig)b.orig={}}});c.fx.prototype={update:function(){this.options.step&&this.options.step.call(this.elem,this.now,this);(c.fx.step[this.prop]||
+c.fx.step._default)(this);if((this.prop==="height"||this.prop==="width")&&this.elem.style)this.elem.style.display="block"},cur:function(a){if(this.elem[this.prop]!=null&&(!this.elem.style||this.elem.style[this.prop]==null))return this.elem[this.prop];return(a=parseFloat(c.css(this.elem,this.prop,a)))&&a>-10000?a:parseFloat(c.curCSS(this.elem,this.prop))||0},custom:function(a,b,d){function f(j){return e.step(j)}this.startTime=J();this.start=a;this.end=b;this.unit=d||this.unit||"px";this.now=this.start;
+this.pos=this.state=0;var e=this;f.elem=this.elem;if(f()&&c.timers.push(f)&&!W)W=setInterval(c.fx.tick,13)},show:function(){this.options.orig[this.prop]=c.style(this.elem,this.prop);this.options.show=true;this.custom(this.prop==="width"||this.prop==="height"?1:0,this.cur());c(this.elem).show()},hide:function(){this.options.orig[this.prop]=c.style(this.elem,this.prop);this.options.hide=true;this.custom(this.cur(),0)},step:function(a){var b=J(),d=true;if(a||b>=this.options.duration+this.startTime){this.now=
+this.end;this.pos=this.state=1;this.update();this.options.curAnim[this.prop]=true;for(var f in this.options.curAnim)if(this.options.curAnim[f]!==true)d=false;if(d){if(this.options.display!=null){this.elem.style.overflow=this.options.overflow;a=c.data(this.elem,"olddisplay");this.elem.style.display=a?a:this.options.display;if(c.css(this.elem,"display")==="none")this.elem.style.display="block"}this.options.hide&&c(this.elem).hide();if(this.options.hide||this.options.show)for(var e in this.options.curAnim)c.style(this.elem,
+e,this.options.orig[e]);this.options.complete.call(this.elem)}return false}else{e=b-this.startTime;this.state=e/this.options.duration;a=this.options.easing||(c.easing.swing?"swing":"linear");this.pos=c.easing[this.options.specialEasing&&this.options.specialEasing[this.prop]||a](this.state,e,0,1,this.options.duration);this.now=this.start+(this.end-this.start)*this.pos;this.update()}return true}};c.extend(c.fx,{tick:function(){for(var a=c.timers,b=0;b<a.length;b++)a[b]()||a.splice(b--,1);a.length||
+c.fx.stop()},stop:function(){clearInterval(W);W=null},speeds:{slow:600,fast:200,_default:400},step:{opacity:function(a){c.style(a.elem,"opacity",a.now)},_default:function(a){if(a.elem.style&&a.elem.style[a.prop]!=null)a.elem.style[a.prop]=(a.prop==="width"||a.prop==="height"?Math.max(0,a.now):a.now)+a.unit;else a.elem[a.prop]=a.now}}});if(c.expr&&c.expr.filters)c.expr.filters.animated=function(a){return c.grep(c.timers,function(b){return a===b.elem}).length};c.fn.offset="getBoundingClientRect"in s.documentElement?
+function(a){var b=this[0];if(a)return this.each(function(e){c.offset.setOffset(this,a,e)});if(!b||!b.ownerDocument)return null;if(b===b.ownerDocument.body)return c.offset.bodyOffset(b);var d=b.getBoundingClientRect(),f=b.ownerDocument;b=f.body;f=f.documentElement;return{top:d.top+(self.pageYOffset||c.support.boxModel&&f.scrollTop||b.scrollTop)-(f.clientTop||b.clientTop||0),left:d.left+(self.pageXOffset||c.support.boxModel&&f.scrollLeft||b.scrollLeft)-(f.clientLeft||b.clientLeft||0)}}:function(a){var b=
+this[0];if(a)return this.each(function(r){c.offset.setOffset(this,a,r)});if(!b||!b.ownerDocument)return null;if(b===b.ownerDocument.body)return c.offset.bodyOffset(b);c.offset.initialize();var d=b.offsetParent,f=b,e=b.ownerDocument,j,i=e.documentElement,o=e.body;f=(e=e.defaultView)?e.getComputedStyle(b,null):b.currentStyle;for(var k=b.offsetTop,n=b.offsetLeft;(b=b.parentNode)&&b!==o&&b!==i;){if(c.offset.supportsFixedPosition&&f.position==="fixed")break;j=e?e.getComputedStyle(b,null):b.currentStyle;
+k-=b.scrollTop;n-=b.scrollLeft;if(b===d){k+=b.offsetTop;n+=b.offsetLeft;if(c.offset.doesNotAddBorder&&!(c.offset.doesAddBorderForTableAndCells&&/^t(able|d|h)$/i.test(b.nodeName))){k+=parseFloat(j.borderTopWidth)||0;n+=parseFloat(j.borderLeftWidth)||0}f=d;d=b.offsetParent}if(c.offset.subtractsBorderForOverflowNotVisible&&j.overflow!=="visible"){k+=parseFloat(j.borderTopWidth)||0;n+=parseFloat(j.borderLeftWidth)||0}f=j}if(f.position==="relative"||f.position==="static"){k+=o.offsetTop;n+=o.offsetLeft}if(c.offset.supportsFixedPosition&&
+f.position==="fixed"){k+=Math.max(i.scrollTop,o.scrollTop);n+=Math.max(i.scrollLeft,o.scrollLeft)}return{top:k,left:n}};c.offset={initialize:function(){var a=s.body,b=s.createElement("div"),d,f,e,j=parseFloat(c.curCSS(a,"marginTop",true))||0;c.extend(b.style,{position:"absolute",top:0,left:0,margin:0,border:0,width:"1px",height:"1px",visibility:"hidden"});b.innerHTML="<div style='position:absolute;top:0;left:0;margin:0;border:5px solid #000;padding:0;width:1px;height:1px;'><div></div></div><table style='position:absolute;top:0;left:0;margin:0;border:5px solid #000;padding:0;width:1px;height:1px;' cellpadding='0' cellspacing='0'><tr><td></td></tr></table>";
+a.insertBefore(b,a.firstChild);d=b.firstChild;f=d.firstChild;e=d.nextSibling.firstChild.firstChild;this.doesNotAddBorder=f.offsetTop!==5;this.doesAddBorderForTableAndCells=e.offsetTop===5;f.style.position="fixed";f.style.top="20px";this.supportsFixedPosition=f.offsetTop===20||f.offsetTop===15;f.style.position=f.style.top="";d.style.overflow="hidden";d.style.position="relative";this.subtractsBorderForOverflowNotVisible=f.offsetTop===-5;this.doesNotIncludeMarginInBodyOffset=a.offsetTop!==j;a.removeChild(b);
+c.offset.initialize=c.noop},bodyOffset:function(a){var b=a.offsetTop,d=a.offsetLeft;c.offset.initialize();if(c.offset.doesNotIncludeMarginInBodyOffset){b+=parseFloat(c.curCSS(a,"marginTop",true))||0;d+=parseFloat(c.curCSS(a,"marginLeft",true))||0}return{top:b,left:d}},setOffset:function(a,b,d){if(/static/.test(c.curCSS(a,"position")))a.style.position="relative";var f=c(a),e=f.offset(),j=parseInt(c.curCSS(a,"top",true),10)||0,i=parseInt(c.curCSS(a,"left",true),10)||0;if(c.isFunction(b))b=b.call(a,
+d,e);d={top:b.top-e.top+j,left:b.left-e.left+i};"using"in b?b.using.call(a,d):f.css(d)}};c.fn.extend({position:function(){if(!this[0])return null;var a=this[0],b=this.offsetParent(),d=this.offset(),f=/^body|html$/i.test(b[0].nodeName)?{top:0,left:0}:b.offset();d.top-=parseFloat(c.curCSS(a,"marginTop",true))||0;d.left-=parseFloat(c.curCSS(a,"marginLeft",true))||0;f.top+=parseFloat(c.curCSS(b[0],"borderTopWidth",true))||0;f.left+=parseFloat(c.curCSS(b[0],"borderLeftWidth",true))||0;return{top:d.top-
+f.top,left:d.left-f.left}},offsetParent:function(){return this.map(function(){for(var a=this.offsetParent||s.body;a&&!/^body|html$/i.test(a.nodeName)&&c.css(a,"position")==="static";)a=a.offsetParent;return a})}});c.each(["Left","Top"],function(a,b){var d="scroll"+b;c.fn[d]=function(f){var e=this[0],j;if(!e)return null;if(f!==w)return this.each(function(){if(j=wa(this))j.scrollTo(!a?f:c(j).scrollLeft(),a?f:c(j).scrollTop());else this[d]=f});else return(j=wa(e))?"pageXOffset"in j?j[a?"pageYOffset":
+"pageXOffset"]:c.support.boxModel&&j.document.documentElement[d]||j.document.body[d]:e[d]}});c.each(["Height","Width"],function(a,b){var d=b.toLowerCase();c.fn["inner"+b]=function(){return this[0]?c.css(this[0],d,false,"padding"):null};c.fn["outer"+b]=function(f){return this[0]?c.css(this[0],d,false,f?"margin":"border"):null};c.fn[d]=function(f){var e=this[0];if(!e)return f==null?null:this;if(c.isFunction(f))return this.each(function(j){var i=c(this);i[d](f.call(this,j,i[d]()))});return"scrollTo"in
+e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["client"+b]||e.document.body["client"+b]:e.nodeType===9?Math.max(e.documentElement["client"+b],e.body["scroll"+b],e.documentElement["scroll"+b],e.body["offset"+b],e.documentElement["offset"+b]):f===w?c.css(e,d):this.css(d,typeof f==="string"?f:f+"px")}});A.jQuery=A.$=c})(window);
+</script>
+
+<script type='text/javascript'>
+/**
+sprintf() for JavaScript 0.7-beta1
+http://www.diveintojavascript.com/projects/javascript-sprintf
+
+Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of sprintf() for JavaScript nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Changelog:
+2010.09.06 - 0.7-beta1
+  - features: vsprintf, support for named placeholders
+  - enhancements: format cache, reduced global namespace pollution
+
+2010.05.22 - 0.6:
+ - reverted to 0.4 and fixed the bug regarding the sign of the number 0
+ Note:
+ Thanks to Raphael Pigulla <raph (at] n3rd [dot) org> (http://www.n3rd.org/)
+ who warned me about a bug in 0.5, I discovered that the last update was
+ a regress. I appologize for that.
+
+2010.05.09 - 0.5:
+ - bug fix: 0 is now preceeded with a + sign
+ - bug fix: the sign was not at the right position on padded results (Kamal Abdali)
+ - switched from GPL to BSD license
+
+2007.10.21 - 0.4:
+ - unit test and patch (David Baird)
+
+2007.09.17 - 0.3:
+ - bug fix: no longer throws exception on empty paramenters (Hans Pufal)
+
+2007.09.11 - 0.2:
+ - feature: added argument swapping
+
+2007.04.03 - 0.1:
+ - initial release
+**/
+
+var sprintf = (function() {
+	function get_type(variable) {
+		return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase();
+	}
+	function str_repeat(input, multiplier) {
+		for (var output = []; multiplier > 0; output[--multiplier] = input) {/* do nothing */}
+		return output.join('');
+	}
+
+	var str_format = function() {
+		if (!str_format.cache.hasOwnProperty(arguments[0])) {
+			str_format.cache[arguments[0]] = str_format.parse(arguments[0]);
+		}
+		return str_format.format.call(null, str_format.cache[arguments[0]], arguments);
+	};
+
+	str_format.format = function(parse_tree, argv) {
+		var cursor = 1, tree_length = parse_tree.length, node_type = '', arg, output = [], i, k, match, pad, pad_character, pad_length;
+		for (i = 0; i < tree_length; i++) {
+			node_type = get_type(parse_tree[i]);
+			if (node_type === 'string') {
+				output.push(parse_tree[i]);
+			}
+			else if (node_type === 'array') {
+				match = parse_tree[i]; // convenience purposes only
+				if (match[2]) { // keyword argument
+					arg = argv[cursor];
+					for (k = 0; k < match[2].length; k++) {
+						if (!arg.hasOwnProperty(match[2][k])) {
+							throw(sprintf('[sprintf] property "%s" does not exist', match[2][k]));
+						}
+						arg = arg[match[2][k]];
+					}
+				}
+				else if (match[1]) { // positional argument (explicit)
+					arg = argv[match[1]];
+				}
+				else { // positional argument (implicit)
+					arg = argv[cursor++];
+				}
+
+				if (/[^s]/.test(match[8]) && (get_type(arg) != 'number')) {
+					throw(sprintf('[sprintf] expecting number but found %s', get_type(arg)));
+				}
+				switch (match[8]) {
+					case 'b': arg = arg.toString(2); break;
+					case 'c': arg = String.fromCharCode(arg); break;
+					case 'd': arg = parseInt(arg, 10); break;
+					case 'e': arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential(); break;
+					case 'f': arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg); break;
+					case 'o': arg = arg.toString(8); break;
+					case 's': arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg); break;
+					case 'u': arg = Math.abs(arg); break;
+					case 'x': arg = arg.toString(16); break;
+					case 'X': arg = arg.toString(16).toUpperCase(); break;
+				}
+				arg = (/[def]/.test(match[8]) && match[3] && arg >= 0 ? '+'+ arg : arg);
+				pad_character = match[4] ? match[4] == '0' ? '0' : match[4].charAt(1) : ' ';
+				pad_length = match[6] - String(arg).length;
+				pad = match[6] ? str_repeat(pad_character, pad_length) : '';
+				output.push(match[5] ? arg + pad : pad + arg);
+			}
+		}
+		return output.join('');
+	};
+
+	str_format.cache = {};
+
+	str_format.parse = function(fmt) {
+		var _fmt = fmt, match = [], parse_tree = [], arg_names = 0;
+		while (_fmt) {
+			if ((match = /^[^\x25]+/.exec(_fmt)) !== null) {
+				parse_tree.push(match[0]);
+			}
+			else if ((match = /^\x25{2}/.exec(_fmt)) !== null) {
+				parse_tree.push('%');
+			}
+			else if ((match = /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(_fmt)) !== null) {
+				if (match[2]) {
+					arg_names |= 1;
+					var field_list = [], replacement_field = match[2], field_match = [];
+					if ((field_match = /^([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+						field_list.push(field_match[1]);
+						while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+							if ((field_match = /^\.([a-z_][a-z_\d]*)/i.exec(replacement_field)) !== null) {
+								field_list.push(field_match[1]);
+							}
+							else if ((field_match = /^\[(\d+)\]/.exec(replacement_field)) !== null) {
+								field_list.push(field_match[1]);
+							}
+							else {
+								throw('[sprintf] huh?');
+							}
+						}
+					}
+					else {
+						throw('[sprintf] huh?');
+					}
+					match[2] = field_list;
+				}
+				else {
+					arg_names |= 2;
+				}
+				if (arg_names === 3) {
+					throw('[sprintf] mixing positional and named placeholders is not (yet) supported');
+				}
+				parse_tree.push(match);
+			}
+			else {
+				throw('[sprintf] huh?');
+			}
+			_fmt = _fmt.substring(match[0].length);
+		}
+		return parse_tree;
+	};
+
+	return str_format;
+})();
+
+var vsprintf = function(fmt, argv) {
+	argv.unshift(fmt);
+	return sprintf.apply(null, argv);
+};
+</script>
+
+<script type='text/javascript'>
+// 2.2.0-crypto-sha1.js
+// crypto-js, JavaScript implementations of standard and secure cryptographic algorithms, http://code.google.com/p/crypto-js/
+
+if(typeof Crypto=="undefined"||!Crypto.util)(function(){var i=window.Crypto={},l=i.util={rotl:function(a,c){return a<<c|a>>>32-c},rotr:function(a,c){return a<<32-c|a>>>c},endian:function(a){if(a.constructor==Number)return l.rotl(a,8)&16711935|l.rotl(a,24)&4278255360;for(var c=0;c<a.length;c++)a[c]=l.endian(a[c]);return a},randomBytes:function(a){for(var c=[];a>0;a--)c.push(Math.floor(Math.random()*256));return c},bytesToWords:function(a){for(var c=[],b=0,d=0;b<a.length;b++,d+=8)c[d>>>5]|=a[b]<<24-
+d%32;return c},wordsToBytes:function(a){for(var c=[],b=0;b<a.length*32;b+=8)c.push(a[b>>>5]>>>24-b%32&255);return c},bytesToHex:function(a){for(var c=[],b=0;b<a.length;b++){c.push((a[b]>>>4).toString(16));c.push((a[b]&15).toString(16))}return c.join("")},hexToBytes:function(a){for(var c=[],b=0;b<a.length;b+=2)c.push(parseInt(a.substr(b,2),16));return c},bytesToBase64:function(a){if(typeof btoa=="function")return btoa(m.bytesToString(a));for(var c=[],b=0;b<a.length;b+=3)for(var d=a[b]<<16|a[b+1]<<
+8|a[b+2],e=0;e<4;e++)b*8+e*6<=a.length*8?c.push("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(d>>>6*(3-e)&63)):c.push("=");return c.join("")},base64ToBytes:function(a){if(typeof atob=="function")return m.stringToBytes(atob(a));a=a.replace(/[^A-Z0-9+\/]/ig,"");for(var c=[],b=0,d=0;b<a.length;d=++b%4)d!=0&&c.push(("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".indexOf(a.charAt(b-1))&Math.pow(2,-2*d+8)-1)<<d*2|"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".indexOf(a.charAt(b))>>>
+6-d*2);return c}};i.mode={};i=i.charenc={};i.UTF8={stringToBytes:function(a){return m.stringToBytes(unescape(encodeURIComponent(a)))},bytesToString:function(a){return decodeURIComponent(escape(m.bytesToString(a)))}};var m=i.Binary={stringToBytes:function(a){for(var c=[],b=0;b<a.length;b++)c.push(a.charCodeAt(b)&255);return c},bytesToString:function(a){for(var c=[],b=0;b<a.length;b++)c.push(String.fromCharCode(a[b]));return c.join("")}}})();
+(function(){var i=Crypto,l=i.util,m=i.charenc,a=m.UTF8,c=m.Binary,b=i.SHA1=function(d,e){var g=l.wordsToBytes(b._sha1(d));return e&&e.asBytes?g:e&&e.asString?c.bytesToString(g):l.bytesToHex(g)};b._sha1=function(d){if(d.constructor==String)d=a.stringToBytes(d);var e=l.bytesToWords(d),g=d.length*8;d=[];var n=1732584193,h=-271733879,j=-1732584194,k=271733878,o=-1009589776;e[g>>5]|=128<<24-g%32;e[(g+64>>>9<<4)+15]=g;for(g=0;g<e.length;g+=16){for(var q=n,r=h,s=j,t=k,u=o,f=0;f<80;f++){if(f<16)d[f]=e[g+
+f];else{var p=d[f-3]^d[f-8]^d[f-14]^d[f-16];d[f]=p<<1|p>>>31}p=(n<<5|n>>>27)+o+(d[f]>>>0)+(f<20?(h&j|~h&k)+1518500249:f<40?(h^j^k)+1859775393:f<60?(h&j|h&k|j&k)-1894007588:(h^j^k)-899497514);o=k;k=j;j=h<<30|h>>>2;h=n;n=p}n+=q;h+=r;j+=s;k+=t;o+=u}return[n,h,j,k,o]};b._blocksize=16;b._digestsize=20})();
+</script>
+
+<script type='text/javascript'>
+// 2.2.0-crypto-hmac-min.js
+// crypto-js, JavaScript implementations of standard and secure cryptographic algorithms, http://code.google.com/p/crypto-js/
+
+(function(){var f=Crypto,j=f.util,g=f.charenc,h=g.UTF8,k=g.Binary;f.HMAC=function(b,c,a,d){if(c.constructor==String)c=h.stringToBytes(c);if(a.constructor==String)a=h.stringToBytes(a);if(a.length>b._blocksize*4)a=b(a,{asBytes:true});var i=a.slice(0);a=a.slice(0);for(var e=0;e<b._blocksize*4;e++){i[e]^=92;a[e]^=54}b=b(i.concat(b(a.concat(c),{asBytes:true})),{asBytes:true});return d&&d.asBytes?b:d&&d.asString?k.bytesToString(b):j.bytesToHex(b)}})();
+</script>
+
+<script type='text/javascript'>
+// 2.2.0-crypto-min.js
+// crypto-js, JavaScript implementations of standard and secure cryptographic algorithms, http://code.google.com/p/crypto-js/
+
+if(typeof Crypto=="undefined"||!Crypto.util)(function(){var e=window.Crypto={},h=e.util={rotl:function(a,b){return a<<b|a>>>32-b},rotr:function(a,b){return a<<32-b|a>>>b},endian:function(a){if(a.constructor==Number)return h.rotl(a,8)&16711935|h.rotl(a,24)&4278255360;for(var b=0;b<a.length;b++)a[b]=h.endian(a[b]);return a},randomBytes:function(a){for(var b=[];a>0;a--)b.push(Math.floor(Math.random()*256));return b},bytesToWords:function(a){for(var b=[],c=0,d=0;c<a.length;c++,d+=8)b[d>>>5]|=a[c]<<24-
+d%32;return b},wordsToBytes:function(a){for(var b=[],c=0;c<a.length*32;c+=8)b.push(a[c>>>5]>>>24-c%32&255);return b},bytesToHex:function(a){for(var b=[],c=0;c<a.length;c++){b.push((a[c]>>>4).toString(16));b.push((a[c]&15).toString(16))}return b.join("")},hexToBytes:function(a){for(var b=[],c=0;c<a.length;c+=2)b.push(parseInt(a.substr(c,2),16));return b},bytesToBase64:function(a){if(typeof btoa=="function")return btoa(f.bytesToString(a));for(var b=[],c=0;c<a.length;c+=3)for(var d=a[c]<<16|a[c+1]<<
+8|a[c+2],g=0;g<4;g++)c*8+g*6<=a.length*8?b.push("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(d>>>6*(3-g)&63)):b.push("=");return b.join("")},base64ToBytes:function(a){if(typeof atob=="function")return f.stringToBytes(atob(a));a=a.replace(/[^A-Z0-9+\/]/ig,"");for(var b=[],c=0,d=0;c<a.length;d=++c%4)d!=0&&b.push(("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".indexOf(a.charAt(c-1))&Math.pow(2,-2*d+8)-1)<<d*2|"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".indexOf(a.charAt(c))>>>
+6-d*2);return b}};e.mode={};e=e.charenc={};e.UTF8={stringToBytes:function(a){return f.stringToBytes(unescape(encodeURIComponent(a)))},bytesToString:function(a){return decodeURIComponent(escape(f.bytesToString(a)))}};var f=e.Binary={stringToBytes:function(a){for(var b=[],c=0;c<a.length;c++)b.push(a.charCodeAt(c)&255);return b},bytesToString:function(a){for(var b=[],c=0;c<a.length;c++)b.push(String.fromCharCode(a[c]));return b.join("")}}})();
+</script>
+
+<!-- mygengo.js -->
+<script type='text/javascript'>
+/*
+myGengo API javascript
+APIQuery object and associated scripts
+Copyright 2011, Josh Chia
+
+Released under the Lesser GNU Public License, version 3
+http://www.gnu.org/licenses/lgpl.html
+*/
+
+/*
+Contents: APIQuery, json_sort, url_encode, ascii_encode, sign
+
+Dependencies: 
+    sprintf() for JavaScript 0.7-beta1 (http://www.diveintojavascript.com/projects/javascript-sprintf)
+    crypto-js (http://code.google.com/p/crypto-js/)
+    mygengo call:url dictionary
+*/
+
+var APIQuery = function(call, params, data, url_params) {
+/*  call:            string;     query url to mygengo api
+    params:          json;       specific params needed to authenticate query and generate url
+    data:            json;       data sent as part of api request (post, put)
+    url_params:      json;       url specific parameters */
+    
+    query_params = (params === undefined) ? {} : params;
+    query_params.api_key = settings.api_key;
+    query_params.ts = parseInt((new Date).getTime() / 1000).toString();
+    
+    // fix for IE (lame XDomainRequest crap)
+    if ($.browser.msie && window.XDomainRequest) {
+        switch (call) {
+            case mygengo.translate_job_id_delete:
+                query_params._method = 'delete'
+                break;
+                
+            case mygengo.translate_job_id_put:
+                query_params._method = 'put'
+                break;
+                
+            default:
+                break;
+        };
+    };
+    
+    // stringify used as equality operator
+    if ((!(data === undefined)) && (JSON.stringify(data) != '{}')) {
+        query_params.data = ascii_encode(JSON.stringify(data));
+    };
+    
+    // determining api sig method
+    switch (call) {
+        // for those with data sent i.e. POST PUT
+        case mygengo.translate_job_post:
+        case mygengo.translate_jobs_post:
+        case mygengo.translate_job_id_comment_post:
+        case mygengo.translate_service_quote_post:
+        case mygengo.translate_job_id_put:
+            query_params.api_sig = sign(JSON.stringify(json_sort(query_params)), settings.private_key);
+            break;
+        
+        // for those with no data sent (only url query params) i.e. GET DELETE
+        default:
+            query_params.api_sig = sign(url_encode(json_sort(query_params)), settings.private_key);
+            break;
+    };
+    
+    // returning APIQuery json
+    switch (call) {
+        case mygengo.account_balance_get:
+        case mygengo.account_stats_get:
+        case mygengo.translate_service_languages_get: 
+        case mygengo.translate_job_language_pairs_get:
+        case mygengo.translate_jobs_get:
+            return {'call': call, 'method': 'GET', 'url': encodeURIComponent(call + url_encode(query_params))};
+            break;
+        
+        case mygengo.translate_job_id_get:
+            return {'call': call, 'method': 'GET', 'url': encodeURIComponent(sprintf(call, query_params.job_id, url_encode(query_params)))};
+            break;
+            
+        case mygengo.translate_job_id_delete:
+            // substring called to remove prefix used to distinguish url path between delete and get job id
+            // fix for IE (lame XDomainRequest crap)
+            if ($.browser.msie && window.XDomainRequest) {
+                return {'call': call, 'method': 'POST', 'url': encodeURIComponent(sprintf(call.substring(2), url_params.job_id, url_encode(query_params))), 'data': url_encode(query_params)};
+            }
+            else {
+                return {'call': call, 'method': 'DELETE', 'url': encodeURIComponent(sprintf(call.substring(2), url_params.job_id, url_encode(query_params)))};
+            };
+            break;
+            
+        case mygengo.translate_job_id_put:
+            // fix for IE (lame XDomainRequest crap)
+            if ($.browser.msie && window.XDomainRequest) {
+                return {'call': call, 'method': 'POST', 'url': encodeURIComponent(sprintf(call, url_params.job_id)), 'data': url_encode(query_params)};
+            }
+            else {
+                // couldn't get PUT method to work, seems the data wasn't being sent as API response is api_key missing (yet dev console shows it was sent)
+                // a quick change to POST method fixes this so problem is with PUT/data
+                return {'call': call, 'method': 'POST', 'url': encodeURIComponent(sprintf(call, url_params.job_id)), 'data': url_encode(query_params)};
+            };
+            break;
+        
+        case mygengo.translate_job_post:
+        case mygengo.translate_jobs_post:
+        case mygengo.translate_service_quote_post:
+            return {'call': call, 'method': 'POST', 'url': call, 'data': url_encode(query_params)};
+            break;
+            
+        case mygengo.translate_job_id_comment_post:
+            return {'call': call, 'method': 'POST', 'url': encodeURIComponent(sprintf(call, url_params.job_id)), 'data': url_encode(query_params)};
+            break;
+        
+        case mygengo.translate_job_id_comments_get:
+        case mygengo.translate_job_id_feedback_get:
+        case mygengo.translate_job_id_preview_get:
+        case mygengo.translate_job_id_revisions_get:
+        case mygengo.translate_jobs_id_get:
+            return {'call': call, 'method': 'GET', 'url': encodeURIComponent(sprintf(call, url_params.job_id, url_encode(query_params)))};
+            break;
+        
+        case mygengo.translate_job_id_revision_rev_id_get:
+            return {'call': call, 'method': 'GET', 'url': encodeURIComponent(sprintf(call, url_params.job_id, url_params.rev_id, url_encode(query_params)))};
+            break;
+        
+        default:
+            return {'call': call, 'method': 'ERROR', 'data': 'API query not supported'};
+            break;
+    };
+};
+    
+function json_sort(obj) {
+    var keys = [];
+    var sorted_obj = {};
+
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            keys.push(key);
+        }
+    };
+    keys.sort();
+    
+    for (i = 0; i < keys.length; i++) {
+        sorted_obj[keys[i]] = obj[keys[i]];
+    };
+    return sorted_obj;
+};
+
+function url_encode(dict) {
+    var url = [];
+
+    for (var d in dict) {
+        if (dict.hasOwnProperty(d)) {
+            url.push(d + '=' + 
+                encodeURIComponent(dict[d]).replace(/[!*'()~]/g, function(r) {
+                    return '%' + r.charCodeAt(0).toString(16).toUpperCase();
+                })
+            );
+        };
+    };
+    return url.join("&");
+};
+
+function ascii_encode(str) {
+    var escaped = '';
+    
+    for (var i = 0; i < str.length; ++i) {
+        var hex = str.charCodeAt(i);
+        if (hex < 128) {
+            escaped += str[i];
+        }
+        else {
+            hex = hex.toString(16);
+            escaped += '\\u' + '0000'.substr(hex.length) + hex;
+        };
+    };
+    return escaped;
+};
+
+function sign(query_params, private_key) {
+    return Crypto.util.bytesToHex(Crypto.HMAC(Crypto.SHA1, query_params, private_key, {asBytes: true}));
+};
+</script>
+
+<!-- gadgetgengo.js -->
+<script type='text/javascript'>
+/*
+GadgetGengo javascript
+Gadget functionality scripts
+Copyright 2011, Josh Chia
+
+Released under the Lesser GNU Public License, version 3
+http://www.gnu.org/licenses/lgpl.html
+*/
+
+// simple fix for IE XDomainRequest (lame ms)
+(function($) {
+    $._get = $.get;
+    $._post = $.post;
+    
+    $.get = function(url, data, callback) {
+        if (jQuery.browser.msie && window.XDomainRequest) {
+            var xdr = new XDomainRequest();
+            xdr.timeout = 30000; //because IE sucks
+            xdr.ontimeout = function() { 
+                alert('G-Gengo has encountered an error:\n' +
+                    'Please check your connection or API access\n'
+                );
+                $('#update_btn').removeAttr('disabled');
+                xdr.send(data)
+            };
+            xdr.onprogress = function() {};
+            
+            xdr.open('get', url);
+            xdr.onload = function() {
+                callback(eval('(' + xdr.responseText + ')'), 'success');
+            };
+            xdr.send();
+        }
+        else {
+            $._get(url, data, callback);
+        };
+    };
+    
+    $.post = function(url, data, callback) {
+        if (jQuery.browser.msie && window.XDomainRequest) {
+            var xdr = new XDomainRequest();
+            xdr.timeout = 5000;
+            xdr.ontimeout = function() { 
+                alert('timeout!');
+                xdr.send(data)
+            };
+            xdr.onprogress = function() {};
+            
+            xdr.open('post', url);
+            xdr.send(data);
+            xdr.onload = function() {
+                callback(eval('(' + xdr.responseText + ')'), 'success');
+            };
+        }
+        else {
+            $._post(url, data, callback);
+        };
+    };
+})(jQuery);
+
+$.ajaxSetup({
+    error: function(xhr) {
+        alert('G-Gengo has encountered an error:\n' +
+            'Please check your connection or API access\n' +
+            'Request status: ' + xhr.status + ' ' + xhr.statusText
+        );
+    }
+});
+
+var AJAXRequest = function(api_obj, callback) {    
+    var url = settings.run_mode + api_obj.url;
+
+    callback = (callback === undefined) ? ajax_callback : callback;
+    url = (settings.host === undefined) ? url : settings.host + '?query=' + url;
+    
+    function success_handler(data) {
+        if (data.opstat == 'error') {
+            switch(data.err.code) {
+                case 2401:
+                    alert('G-Gengo has encountered error ' + data.err.code + ':\n' + 'Invalid CAPTCHA, please enter the new CAPTCHA provided');
+                    callback(data, api_obj.call);
+                    break;
+            
+                default:
+                    alert('G-Gengo has encountered error ' + data.err.code + ':\n' + capitalise_first(data.err.msg));
+                    break;
+            };
+        }
+        else {
+            callback(data, api_obj.call);
+        };
+    };
+    
+    switch(api_obj.method) {
+        case 'GET':
+            $.get(url, payload, function(data) {
+                success_handler(data);
+            });
+            break;
+            
+        case 'DELETE':
+            $.ajax({
+                'type': 'DELETE',
+                'url': url,
+                'dataType': 'json',
+                'success': function(data) { success_handler(data); }
+            });
+            break;
+            
+        case 'POST':
+            var payload = 'payload=' + encodeURIComponent(api_obj.data);
+            $.post(url, payload, function(data) {
+                success_handler(data);
+            });
+            break;
+            
+        // can't get put to work with the mygengo API
+        // data is sent properly but API repsonse API key required
+        // change to POST with _method=put fixes the problem immediately
+        case 'PUT':
+            var payload = 'payload=' + encodeURIComponent(api_obj.data);
+            $.ajax({
+                'type': 'PUT',
+                'url': url,
+                'data': payload,
+                'dataType': 'json',
+                'success': function(data) { success_handler(data); }
+            });
+            break;
+        
+        case 'ERROR':
+            alert('G-Gengo has encountered an error:\n' + api_obj.data);
+            break;
+            
+        default:
+            alert('G-Gengo has encountered an error:\n' +
+                'Unrecognised AJAX method\n' +
+                'Made by: ' + api_obj.call
+            );
+            break;
+    };
+};
+
+function ajax_callback(data, call) {
+    switch(call) {
+        case mygengo.account_balance_get:
+            gadgetgengo.balance = data.response.credits;
+            gui_handler('update_balance');
+            break;
+        
+        case mygengo.translate_job_language_pairs_get:
+            gadgetgengo.lang_pairs = data.response;
+            gui_handler('update_lc_src');
+            gui_handler('update_lc_tgt');
+            gui_handler('update_tier');
+            gui_handler('update_quote');
+            break;
+        
+        case mygengo.translate_service_quote_post:
+            gui_handler('update_purchase', data.response.jobs.job1.credits);
+            break;
+        
+        case mygengo.translate_jobs_get:
+            for (i in data.response) {
+                AJAXRequest(APIQuery(mygengo.translate_job_id_get, {'job_id': data.response[i].job_id, 'pre_mt': 1}));
+            };
+            break;
+            
+        case mygengo.translate_job_id_get:
+            gadgetgengo.current_jobs[data.response.job.job_id] = data.response.job;
+            gui_handler('append_job_list', data.response.job.job_id);
+            break;
+        
+        case mygengo.translate_job_id_comments_get:
+            gui_handler('view_comments', data.response.thread)
+            break;
+            
+        case mygengo.translate_job_post:
+            switch($('#new_comment').val()) {
+                case '':
+                case $('#new_comment').get(0).defaultValue:
+                    break;
+                    
+                default:
+                    AJAXRequest(APIQuery(mygengo.translate_job_id_comment_post, {}, {'body': $('#new_comment').val()}, {'job_id': data.response.job.job_id}));
+                    break;
+            };
+            AJAXRequest(APIQuery(mygengo.account_balance_get));
+            
+            if (data.response.job.job_id in gadgetgengo.current_jobs) {
+                gadgetgengo.current_jobs[data.response.job.job_id] = data.response.job;
+                gui_handler('update_status_color', data.response.job.job_id);
+                alert('Updated existing job');
+            }
+            else {
+                gadgetgengo.current_jobs[data.response.job.job_id] = data.response.job;
+                gui_handler('insert_job_list', data.response.job.job_id);
+            };
+            
+            gui_handler('reset_job_form');
+            gui_handler('update_quote');
+            gui_handler('show_job_details', data.response.job.job_id);
+            gui_handler('show_only', '#output_field');
+            break;
+            
+        case mygengo.translate_job_id_comment_post:
+            gui_handler('post_comment');
+            break;
+            
+        // exception cases where more callback flexibility is needed i.e. update_jobs
+        
+        //GET method used to update
+        // data[0]: data retrieved from AJAX request
+        // data[1]: last job id
+        case 'update_job_get':
+            gadgetgengo.current_jobs[data[0].response.job.job_id] = data[0].response.job;
+            gui_handler('insert_job_list', data[0].response.job.job_id);
+            gui_handler('check_update_jobs_complete', [data[0].response.job.job_id, data[1]]);
+            break;
+        
+        //POST (lazy loading) method used to update
+        // data[0]: data retrieved from AJAX request
+        // data[1]: last job id
+        case 'update_job_post':
+            // updates via lazy loading and GET differ, only update according to data received so as to preserve keys such as captcha_url etc.
+            update_key_value_pairs(gadgetgengo.current_jobs[data[0].response.job.job_id], data[0].response.job);
+            
+            gui_handler('update_job_button', data[0].response.job.job_id);
+            gui_handler('check_update_jobs_complete', [data[0].response.job.job_id, data[1]]);
+            break;
+            
+        //exception case as api response returns dummy response
+        // data[0]: data retrieved from AJAX request (useless)
+        // data[1]: job_id deleted
+        case mygengo.translate_job_id_delete:
+            gadgetgengo.current_jobs[data[1]].status = 'cancelled';
+            gui_handler('update_job_button', data[1]);
+            gui_handler('cancel_yes', data[1]);
+            break;
+            
+        //PUT via POST method job reivsion
+        // data[0]: data retrieved from AJAX request (useless)
+        // data[1]: job_id deleted
+        case 'revise_job':           
+            gadgetgengo.current_jobs[data[1]].status = 'revising';
+            gui_handler('update_job_button', data[1]);
+            gui_handler('revise_yes', data[1]);
+            break;
+        
+        // PUT via POST method job approval
+        // data[0]: data retrieved from AJAX request (useless)
+        // data[1]: job_id approved
+        case 'approve_job':
+            gadgetgengo.current_jobs[data[1]].status = 'approved';
+            gui_handler('update_job_button', data[1]);
+            gui_handler('approve_yes', data[1]);
+            break;
+            
+        // update cache with latest job details including captcha_url and recall the show_job_form
+        // exception case as call is GET job id
+        case 'get_captcha':
+            gadgetgengo.current_jobs[data.response.job.job_id] = data.response.job;
+            gui_handler('show_action_form', data.response.job.job_id);
+            break;
+            
+        // update captcha_url if incorrect response received
+        // data[0]: data retrieved from AJAX request
+        // data[1]: job_id rejected
+        case 'captcha_error':
+            gadgetgengo.current_jobs[data[1]].captcha_url = data[0].err.msg[1];
+            gui_handler('captcha_error', data[1]);
+            break;
+        
+        // PUT via POST method job rejection
+        // data[0]: data retrieved from AJAX request
+        // data[1]: job_id rejected
+        case 'reject_job':
+            gadgetgengo.current_jobs[data[1]].status = 'Held';
+            gui_handler('update_job_button', data[1]);
+            gui_handler('reject_yes', data[1]);
+            break;
+    };
+};
+
+function gui_callback(call, data) {
+    // called by HTML GUI i.e. onclick, onblur, onfocus etc.
+    switch(call) {
+        case 'show_options_form':
+            gui_handler('min_job_list');
+            gui_handler('show_only', '#options_form');
+            break;
+            
+        case 'show_job_form':
+            gui_handler('min_job_list');
+            gui_handler('show_only', '#job_form');
+            break;
+        
+        case 'save_options':
+            var changed = false;
+            if ($('#options_api_key').val() != settings.api_key) {
+                prefs.set('api_key', $('#options_api_key').val()); //google gadget API
+                settings.api_key = $('#options_api_key').val();
+                changed = true;
+            };
+            
+            if ($('#options_private_key').val() != settings.private_key) {
+                prefs.set('private_key', $('#options_private_key').val()); //google gadget API
+                settings.private_key = $('#options_private_key').val();
+                changed = true;
+            };
+            
+            if (changed) {
+                gadgetgengo = {
+                    'balance': '',
+                    'lang_pairs': [],
+                    'current_jobs': {}
+                };
+                gui_handler('save_options');
+                gui_handler('init');
+                AJAXRequest(APIQuery(mygengo.account_balance_get));
+                AJAXRequest(APIQuery(mygengo.translate_job_language_pairs_get));
+                AJAXRequest(APIQuery(mygengo.translate_jobs_get));
+            }
+            else {
+                gui_handler('show_only', '#output_field');
+            };
+            break;
+            
+        case 'update_lc_tgt':
+            gui_handler('update_lc_tgt');
+            break;
+        
+        case 'update_tier':
+            gui_handler('update_tier');
+            break;
+            
+        case 'update_quote':
+            gui_handler('update_quote');
+            break;
+            
+        case 'default_remove':
+            if ($(data).val() == data.defaultValue) {
+                $(data).val('');
+            };
+            break;
+        
+        case 'default_add':
+            if ($(data).val() == '') {
+                $(data).val(data.defaultValue);
+            };
+            break;
+            
+        case 'purchase_job':
+            $('#new_purchase').attr('disabled', 'disabled');
+            AJAXRequest(APIQuery(mygengo.translate_job_post, {'_method': 'post'}, {'job': get_job_form()}));
+            break;
+            
+        case 'view_comments':
+            AJAXRequest(APIQuery(mygengo.translate_job_id_comments_get, {}, {}, {'job_id': data}));
+            break;
+        
+        case 'post_comment':
+            switch($('#job_details_enter_comment').val()) {
+                case '':
+                case $('#job_details_enter_comment').get(0).defaultValue:
+                    alert('Please enter a comment');
+                    break;
+                
+                default:
+                    $('#job_details_post_comment').attr('disabled', 'disabled');
+                    AJAXRequest(APIQuery(mygengo.translate_job_id_comment_post, {}, {'body': $('#job_details_enter_comment').val()}, {'job_id': data}));
+                    break;
+            };
+            break;
+            
+        case 'show_job':
+            gui_handler('show_job_details', data);
+            gui_handler('min_job_list');
+            gui_handler('center_selection', data);
+            gui_handler('show_only', '#output_field');
+            break;
+            
+        case 'update_balance':
+            AJAXRequest(APIQuery(mygengo.account_balance_get));
+            break;
+            
+        case 'minmax_job_list':
+            gui_handler('minmax_job_list');
+            break;
+            
+        case 'cancel_yes':
+            $('#job_details_cancel_yes').attr('disabled', 'disabled');
+            AJAXRequest(APIQuery(mygengo.translate_job_id_delete, {}, {}, {'job_id': data}), function(_data) {
+                ajax_callback([_data, data], mygengo.translate_job_id_delete);
+            });
+            break;
+            
+        case 'revise_yes':
+            switch($('#job_details_revise_comment').val()) {
+                case '':
+                case $('#job_details_revise_comment').get(0).defaultValue:
+                    alert('Please enter a revision comment first');
+                    break;
+                
+                default:
+                    $('#job_details_revise_yes').attr('disabled', 'disabled');
+                    AJAXRequest(APIQuery(mygengo.translate_job_id_put, {'_method': 'put'}, {'action': 'revise', 'comment': $('#job_details_revise_comment').val()}, {'job_id': data}), function(_data) {
+                        ajax_callback([_data, data], 'revise_job');
+                    });
+                    break;
+            };
+            break;
+            
+        case 'approve_yes':
+            if ($('#job_details_approve_rating').val() != 'default') {
+                $('#job_details_approve_yes').attr('disabled', 'disabled');
+                
+                var action = {'action': 'approve', 'rating': $('#job_details_approve_rating').val()};
+                switch($('#job_details_approve_translator_feedback').val()) {
+                    case '':
+                    case $('#job_details_approve_translator_feedback').get(0).defaultValue:
+                        break;
+                        
+                    default:
+                        action.for_translator = $('#job_details_approve_translator_feedback').val();
+                        break;
+                };
+                switch($('#job_details_approve_mygengo_feedback').val()) {
+                    case '':
+                    case $('#job_details_approve_mygengo_feedback').get(0).defaultValue:
+                        break;
+                        
+                    default:
+                        action.for_mygengo = $('#job_details_approve_mygengo_feedback').val();
+                        break;
+                };
+                AJAXRequest(APIQuery(mygengo.translate_job_id_put, {'_method': 'put'}, action, {'job_id': data}), function(_data) {
+                    ajax_callback([_data, data], 'approve_job');
+                });
+            }
+            else {
+                alert('Please rate the job first');
+            };
+            break;
+            
+        case 'reject_yes':
+            if ($('#job_details_reject_reason').val() == 'default') {
+                alert('Please select reason for rejection');
+                break;
+            };
+            if ($('#job_details_reject_comment').val() == '' || $('#job_details_reject_comment').val() == $('#job_details_reject_comment').get(0).defaultValue) {
+                alert('Please detail the reasons for rejection');
+                break;
+            };
+            if ($('#job_details_reject_followup').val() == 'default') {
+                alert('Please select a follow up action');
+                break;
+            };
+            if ($('#job_details_reject_captcha').val() == '' || $('#job_details_reject_captcha').val() == $('#job_details_reject_captcha').get(0).defaultValue) {
+                alert('Please enter CAPTCHA');
+                break;
+            };
+            $('#job_details_reject_yes').attr('disabled', 'disabled');
+            
+            var action = {'action': 'reject'};
+            action.reason = $('#job_details_reject_reason').val();
+            action.comment = $('#job_details_reject_comment').val();
+            action.follow_up = $('#job_details_reject_followup').val();
+            action.captcha = $('#job_details_reject_captcha').val();
+            
+            AJAXRequest(APIQuery(mygengo.translate_job_id_put, {'_method': 'put'}, action, {'job_id': data}), function(_data) {
+                if (_data.opstat == 'error') {
+                    ajax_callback([_data, data], 'captcha_error');
+                }
+                else {
+                    ajax_callback([_data, data], 'reject_job');
+                };
+            });
+            break;
+            
+        case 'action_cancel':
+            gui_handler('action_cancel', data);
+            break;
+            
+        case 'update_jobs':
+            //check if any differences with latest job id list and current_jobs list
+            gui_handler('min_job_list');
+            gui_handler('show_only', '#output_field');
+            gui_handler('set_output_field_msg', 'Updating jobs, please wait');
+            
+            //request all jobs, cross reference cancelled jobs, update necessary jobs
+            AJAXRequest(APIQuery(mygengo.translate_jobs_get), function(data) {
+                //if the job id is not in the current list, add job id as the key, value is blank
+                for (i in data.response) {
+                    if (!(data.response[i].job_id in gadgetgengo.current_jobs)) {
+                        gadgetgengo.current_jobs[data.response[i].job_id] = '';
+                    };
+                };
+                
+                // find the last job being sent for update, to provide 'update completed!'
+                var last = 0;
+                for (i in gadgetgengo.current_jobs) {
+                    switch(gadgetgengo.current_jobs[i].status) {
+                        case 'cancelled':
+                        case 'approved':
+                            break;
+                            
+                        default: // covers new jobs not in the cache as well, their status == undefined
+                            last = i;
+                            break;
+                    };
+                };
+                
+                // need to prevent lazy loading from creating any jobs
+                // lazy loading doesn't apply to cancelled jobs (recreates them!) but appears to apply to rejected jobs (status being Held)
+                // API has inconsistent spelling, GET only accepts'canceled' NOT 'cancelled'
+                AJAXRequest(APIQuery(mygengo.translate_jobs_get, {'status': 'canceled'}), function(data) {
+                    var dont_lazy_load = [];
+                    for (i in data.response) {
+                        dont_lazy_load.push(data.response[i].job_id);
+                    };
+                
+                    // make AJAX update calls only if there are jobs to update
+                    if (last) {
+                        for (i in gadgetgengo.current_jobs) {
+                            switch(gadgetgengo.current_jobs[i].status) {
+                                case 'cancelled':
+                                case 'approved':
+                                    //no need to update
+                                    break;
+                                
+                                case undefined: //jobs not in cache, update with GET
+                                    AJAXRequest(APIQuery(mygengo.translate_job_id_get, {'job_id': i, 'pre_mt': 1}), function(data) {
+                                        ajax_callback([data, last], 'update_job_get');
+                                    });
+                                    break;
+                                
+                                default: //jobs in cache, update with POST (lazy loading) or update with GET if job is now cancelled (to prevent actual POST call)
+                                    if (dont_lazy_load.indexOf(i) == -1) {
+                                        AJAXRequest(APIQuery(mygengo.translate_job_post, {'_method': 'post'}, {'job': job_parser(gadgetgengo.current_jobs[i])}), function(data) {
+                                            ajax_callback([data, last], 'update_job_post');
+                                        });
+                                    }
+                                    else {
+                                        AJAXRequest(APIQuery(mygengo.translate_job_id_get, {'job_id': i, 'pre_mt': 1}), function(data) {
+                                            ajax_callback([data, last], 'update_job_post'); //this method applies as it is still an existing job
+                                        });
+                                    };
+                                    break;
+                            };
+                        };
+                    }
+                    else {
+                        gui_handler('check_update_jobs_complete', [0, last]);
+                    };
+                });
+            });
+            break;
+    };
+};
+
+function gui_handler(call, data) {
+    switch(call) {
+        case 'load_base_html':
+        case 'save_options':
+            $('body').html(html_parser('base_html'));
+            break;
+        
+        case 'init':
+            $('#job_form').html(html_parser('job_form'));
+            $('#options_form').html(html_parser('options_form'));
+            
+            $('#update_btn').click(function() {
+                $('#update_btn').attr('disabled', 'disabled');
+                gui_callback('update_balance');
+                gui_callback('update_jobs');
+            });
+            
+            $('#options_btn').click(function() {
+                gui_callback('show_options_form');
+            });
+            
+            $('#minmax_btn').click(function() {
+                gui_callback('minmax_job_list');
+            });
+            
+            $('#add_job').click(function() {
+                gui_callback('show_job_form');
+            });
+            
+            $('#options_api_key').focus(function() {
+                gui_callback('default_remove', this);
+            });
+            
+            $('#options_api_key').blur(function() {
+                gui_callback('default_add', this);
+            });
+            
+            $('#options_private_key').focus(function() {
+                gui_callback('default_remove', this);
+            });
+            
+            $('#options_private_key').blur(function() {
+                gui_callback('default_add', this);
+            });
+            
+            $('#save_options').click(function() {
+                gui_callback('save_options');
+            });
+            
+            $('#new_slug').focus(function() {
+                gui_callback('default_remove', this);
+            });
+            
+            $('#new_slug').blur(function() {
+                gui_callback('default_add', this);
+            });
+            
+            $('#new_body_src').focus(function() {
+                gui_callback('default_remove', this);
+            });
+            
+            $('#new_body_src').blur(function() {
+                gui_callback('default_add', this);
+            });
+            
+            $('#new_comment').focus(function() {
+                gui_callback('default_remove', this);
+            });
+            
+            $('#new_body_src').change(function() {
+                if ($('#new_tier').val() != 'machine' && $('#new_body_src').val() != '') {
+                    gui_callback('update_quote');
+                };
+            });
+            
+            $('#new_lc_src').change(function() {
+                gui_callback('update_lc_tgt');
+                gui_callback('update_tier');
+                gui_callback('update_quote');
+            });
+            
+            $('#new_lc_tgt').change(function() {
+                gui_callback('update_tier');
+                gui_callback('update_quote');
+            });
+            
+            $('#new_tier').change(function() {
+                gui_callback('update_quote');
+            });
+            
+            $('#new_purchase').click(function() {
+                gui_callback('purchase_job');
+            });
+            break;
+        
+        case 'reset_job_form':
+            $('#new_slug').val('Job title');
+            $('#new_body_src').val('Text to translate');
+            $('#new_comment').val('Comment for translator');
+            $('new_purchase').removeAttr('disabled');
+            break;
+        
+        case 'minmax_job_list':
+            var min_or_max = ($('#job_list').css('height') != '243px') ? 'min' : 'max';
+            
+            if (min_or_max == 'min') {
+                $('#job_list').animate({'height': '243px'}, 'slow');
+                $('#minmax_btn').html('-');
+                gui_handler('max_job_list_style');
+            }
+            else {
+                $('#job_list').animate({'height': '105px'}, 'slow');
+                $('#minmax_btn').html('+');
+                gui_handler('min_job_list_style');
+            };
+            break;
+            
+        case 'min_job_list':
+            if ($('#job_list').css('height') != '105px') {
+                $('#job_list').animate({'height': '105px'}, 'slow');
+                $('#minmax_btn').html('+');
+                gui_handler('min_job_list_style');
+            };
+            break;
+            
+        case 'max_job_list_style':
+            $('#job_list').css({'border': 'solid 1px transparent'});
+            break;
+            
+        case 'min_job_list_style':
+            $('#job_list').removeAttr('style');
+            break;
+            
+        case 'center_selection':
+            //takes the id and checks if it is in view, if not it scrolls it into view (for min job_list view)
+            //offset().top: 98 is bottom, 25 is top viewing
+            var pos_from_top = $('#' + data).offset().top;
+            var in_view = (pos_from_top > 98 || pos_from_top < 25) ? false : true;
+            
+            if (!in_view) {
+                var high_or_low = (pos_from_top > 98) ? 'too low' : 'too high';
+                var scroll_pos = $('#job_list').scrollTop();
+                
+                switch(high_or_low) {
+                    case 'too low':
+                        var delta = pos_from_top - 98;
+                        $('#job_list').animate({'scrollTop': scroll_pos + delta}, 'slow');
+                        break;
+                    
+                    case 'too high':
+                        var delta = 25 - pos_from_top;
+                        $('#job_list').animate({'scrollTop': scroll_pos - delta}, 'slow');
+                        break;
+                    
+                    default:
+                        //alert('center_selection: default called!'); should not in be (abled to be) called at all
+                        break;
+                };
+            };
+            break;
+        
+        case 'show_only':
+            var hide_me = ['#output_field', '#job_form', '#options_field'];
+            hide_me.splice(hide_me.indexOf(data), 1);
+            
+            for (i in hide_me) {
+                $(hide_me[i]).fadeOut('fast');
+            };
+            
+            if ($(data).css('display') == 'none') {
+                $(data).fadeIn('fast');
+            };
+            $(data).scrollTop(0);
+            break;
+        
+        case 'update_balance':
+            $('#add_job').html(html_parser('add_job_html', gadgetgengo.balance));
+            break;
+        
+        case 'update_lc_src':
+            $('#new_lc_src').html(html_parser('new_lc_src'));
+            break;
+        
+        case 'update_lc_tgt':
+            $('#new_lc_tgt').attr('disabled', 'disabled');
+            $('#new_lc_tgt').html(html_parser('new_lc_tgt'));
+            $('#new_lc_tgt').removeAttr('disabled');
+            break;
+        
+        case 'update_tier':
+            $('#new_tier').attr('disabled', 'disabled');
+            $('#new_tier').html(html_parser('new_tier'));
+            $('#new_tier').removeAttr('disabled');
+            break;
+            
+        case 'update_quote':
+            if ($('#new_tier').val() != 'machine') {
+                $('#new_purchase').attr('disabled', 'disabled');
+                AJAXRequest(APIQuery(mygengo.translate_service_quote_post, {'_method': 'post'}, {'jobs': {'job1': get_job_form()}, 'as_group': 0}));
+            }
+            else {
+                $('#new_purchase').html('Purchase: Free');
+                $('#new_purchase').removeAttr('disabled');
+            };
+            break;
+        
+        case 'update_purchase':
+            $('#new_purchase').html('Purchase: $' + data.toFixed(2));
+            if (gadgetgengo.balance >= data) {
+                $('#new_purchase').removeAttr('disabled');
+            };
+            break;
+            
+        case 'update_status_color':
+            switch(gadgetgengo.current_jobs[data].status) {
+                case 'cancelled':
+                    $('#' + data).css('opacity', 0.4);
+                    break;
+                
+                case 'approved':
+                case 'reviewable':
+                    $('#' + data).css('color', '#FF6600');
+                    break;
+                
+                default:
+                    $('#' + data).removeAttr('style');
+                    break;
+            };
+            break;
+            
+        case 'set_output_field_msg':
+            $('#output_field').html(html_parser('p', data));
+            break;
+            
+        case 'check_update_jobs_complete':
+            // data[0], current job id
+            // data[1], last job_id
+            if (data[0] == data[1]) {
+                gui_handler('min_job_list');
+                gui_handler('show_only', '#output_field');
+                gui_handler('set_output_field_msg', 'Update complete!');
+                $('#update_btn').removeAttr('disabled');
+            };
+            break;
+            
+        case 'append_job_list':
+            $('#job_list').append(html_parser('text_button', gadgetgengo.current_jobs[data]));
+            $('#' + data).attr('title', gadgetgengo.current_jobs[data].slug);
+            gui_handler('update_status_color', data);
+            
+            $('#' + data).click(function() {
+                gui_callback('show_job', data);
+            });
+            break;
+            
+        case 'insert_job_list':
+            $(html_parser('text_button', gadgetgengo.current_jobs[data])).insertAfter('#add_job');
+            $('#' + data).attr('title', gadgetgengo.current_jobs[data].slug);
+            gui_handler('update_status_color', data);
+            
+            $('#' + data).click(function() {
+                gui_callback('show_job', data);
+            });
+            break;
+        
+        case 'update_job_button':
+            $('#' + data).html(html_parser('text_button_html', gadgetgengo.current_jobs[data]));
+            gui_handler('update_status_color', data);
+            break;
+        
+        case 'view_comments':
+            $('#comment_thread').html(html_parser('view_comments', data));
+            $('#comment_thread').show('slow');
+            $('#job_details_view_comments').html('Refresh Comments');
+            break;
+        
+        case 'post_comment':
+            $('#job_details_enter_comment').val('Leave comments for the translator here');
+            $('#job_details_post_comment').removeAttr('disabled');
+            $('#job_details_view_comments').html('View Comments');
+            $('#comment_thread').hide('slow');
+            break;
+            
+        case 'action_cancel':
+            $('#job_actions').val('comments');
+            gui_handler('show_action_form', data);
+            
+            //scroll down to show the field
+            var delta = $('#job_action_form').css('height');
+            var pos_from_top = $('#output_field').scrollTop();
+            $('#output_field').animate({'scrollTop': pos_from_top + delta}, 'slow');
+            break;
+            
+        case 'cancel_yes':
+            $('#job_details_cancel_yes').removeAttr('disabled');
+            gui_handler('set_output_field_msg', 'Job: ' + gadgetgengo.current_jobs[data].slug + ' has been cancelled!');
+            break;
+            
+        case 'revise_yes':
+            $('#job_details_revise_yes').removeAttr('disabled');
+            gui_handler('set_output_field_msg', 'Job: ' + gadgetgengo.current_jobs[data].slug + ' has been set for revision!');
+            break;
+        
+        case 'approve_yes':
+            $('#job_details_approve_yes').removeAttr('disabled');
+            gui_handler('set_output_field_msg', 'Job: ' + gadgetgengo.current_jobs[data].slug + ' has been approved!');
+            break;
+            
+        case 'captcha_error':
+            $('#job_details_reject_captcha_img').attr('src', gadgetgengo.current_jobs[data].captcha_url);
+            $('#job_details_reject_yes').removeAttr('disabled');
+            break;
+            
+        case 'reject_yes':
+            $('#output_field').html(html_parser('p', 'Job: ' + gadgetgengo.current_jobs[data].slug + ' has been rejected!'));
+            $('#job_details_reject_yes').removeAttr('disabled');
+            break;
+        
+        case 'show_job_details':
+            $('#output_field').html(html_parser('job_details', gadgetgengo.current_jobs[data]));
+            gui_handler('update_job_actions', data);
+            break;
+            
+        case 'update_job_actions':
+            var action_list = {'comments': 'Add/View Comments'};
+            switch(gadgetgengo.current_jobs[data].status) {
+                // to implement other status actions
+                case 'available':
+                    action_list['cancel'] = 'Cancel Job';
+                    break;
+                    
+                case 'reviewable':
+                    action_list['revise'] = 'Revise Job';
+                    action_list['approve'] = 'Approve Job';
+                    action_list['reject'] = 'Reject Job';
+                    break;
+                
+                default:
+                    //blank as Add/View Comments should be top on the list
+                    break;
+            };
+            
+            $('#job_actions').html('');
+            $('#job_actions').append(html_parser('add_job_actions', action_list));
+            
+            // if they change the selection, it should create the appropriate job form (publicly accessible) and functionality (job id?)
+            $('#job_actions').change(function() {
+                gui_handler('show_action_form', data);
+                
+                //scroll down to show form
+                var delta = $('#job_actions').offset().top - 132;
+                var pos_from_top = $('#output_field').scrollTop();
+                $('#output_field').animate({'scrollTop': pos_from_top + delta}, 'slow');
+            });
+            gui_handler('show_action_form', data); //intial call
+            break;
+            
+        case 'show_action_form':
+            switch($('#job_actions').val()) {
+                case 'comments':
+                    $('#job_action_form').html(html_parser('comment_form'));
+                    
+                    $('#job_details_enter_comment').focus(function() {
+                        gui_callback('default_remove', this);
+                    });
+                    $('#job_details_post_comment').click(function() {
+                        gui_callback('post_comment', data);
+                    });
+                    $('#job_details_view_comments').click(function() {
+                        gui_callback('view_comments', data);
+                    });
+                    break;
+                
+                case 'cancel':
+                    $('#job_action_form').html(html_parser('cancel_form'));
+                    
+                    $('#job_details_cancel_no').click(function() {
+                        gui_callback('action_cancel', data);
+                    });
+                    $('#job_details_cancel_yes').click(function() {
+                        gui_callback('cancel_yes', data);
+                    });
+                    break;
+                    
+                case 'revise':
+                    $('#job_action_form').html(html_parser('revise_form'));
+                    
+                    $('#job_details_revise_comment').focus(function() {
+                        gui_callback('default_remove', this);
+                    });
+                    $('#job_details_reivse_comment').blur(function() {
+                        gui_callback('default_add', this);
+                    });
+                    $('#job_details_revise_no').click(function() {
+                        gui_callback('action_cancel', data);
+                    });
+                    $('#job_details_revise_yes').click(function() {
+                        gui_callback('revise_yes', data);
+                    });
+                    break;
+                    
+                case 'approve':
+                    $('#job_action_form').html(html_parser('approve_form'));
+                    
+                    $('#job_details_approve_translator_feedback').focus(function() {
+                        gui_callback('default_remove', this);
+                    });
+                    $('#job_details_approve_translator_feedback').blur(function() {
+                        gui_callback('default_add', this);
+                    });
+                    $('#job_details_approve_mygengo_feedback').focus(function() {
+                        gui_callback('default_remove', this);
+                    });
+                    $('#job_details_approve_mygengo_feedback').blur(function() {
+                        gui_callback('default_add', this);
+                    });
+                    $('#job_details_approve_no').click(function() {
+                        gui_callback('action_cancel', data);
+                    });
+                    $('#job_details_approve_yes').click(function() {
+                        gui_callback('approve_yes', data);
+                    });
+                    break;
+                    
+                case 'reject':
+                    $('#job_action_form').html(html_parser('p', 'Loading form, please wait'));
+                    
+                    // load job form (check if captcha data is available otherwise load it in)
+                    switch(gadgetgengo.current_jobs[data].captcha_url) {
+                        case undefined:
+                            AJAXRequest(APIQuery(mygengo.translate_job_id_get, {'job_id': data, 'pre_mt': 1}), function(data) {
+                                ajax_callback(data, 'get_captcha');
+                            });
+                            break;
+                            
+                        default:
+                            $('#job_action_form').html(html_parser('reject_form', gadgetgengo.current_jobs[data].captcha_url));
+                            break;
+                    };
+                    
+                    $('#job_details_reject_comment').focus(function() {
+                        gui_callback('default_remove', this);
+                    });
+                    $('#job_details_reject_comment').blur(function() {
+                        gui_callback('default_add', this);
+                    });
+                    $('#job_details_reject_captcha').focus(function() {
+                        gui_callback('default_remove', this);
+                    });
+                    $('#job_details_reject_captcha').blur(function() {
+                        gui_callback('default_add', this);
+                    });
+                    $('#job_details_reject_no').click(function() {
+                        gui_callback('action_cancel', data);
+                    });
+                    $('#job_details_reject_yes').click(function() {
+                        gui_callback('reject_yes', data);
+                    });
+                    break;
+            };
+            break;
+    };
+};
+
+function html_parser(call, data) {
+    var html_result = '';
+    switch(call) {
+        // assign at risk HTML attributes via JQUERY as precaution, must be at a level higher - html_parser only return text
+        case 'p':
+            html_result = '<p>' + data + '</p>';
+            break;
+        
+        case 'base_html':
+            html_result = 
+                "<p class='bold'>" +
+                    "<button type='button' id='update_btn'>Refresh</button>" +
+                    "<button type='button' id='options_btn'>Options</button>" +
+                    "<button type='button' id='minmax_btn'>+</button>" +
+                "</p>" +
+                "<div class='container' id='job_list'>" +
+                    "<p class='text_button' id='add_job'>Order Translation</br>Credits:</p>" +
+                "</div>" +
+                "<div class='container' id='output_field'>" +
+                    "<p>Job details displayed here</p>" +
+                "</div>" +
+                "<div class='container' id='job_form'>" +
+                "</div>" +
+                "<div class='container' id='options_form'>" +
+                "</div>";
+            break;
+        
+        case 'options_form':
+            html_result = 
+                '<p>Public key:</br>' +
+                '<input type="text" id="options_api_key" value="' + settings.api_key + '"/></p></br>' +
+                '<p>Private key:</br>' +
+                '<input type="text" id="options_private_key" value="' + settings.private_key + '"/></br>' +
+                '<button id="save_options">Save</button></p>';
+            break;
+    
+        case 'text_button':
+            // quick dirty hack to display status 'held' as 'rejection under review' - per myGengo feedback
+            var displayed_status = (data.status == 'held') ? 'rejection under review' : data.status;
+            
+            html_result = 
+                '<p class="text_button" id="' + data.job_id +'" title="">' +
+                    (data.slug.length > 18 ? data.slug.substring(0, 18) + '...' : data.slug) + '</br>' +
+                    capitalise_first(displayed_status) +
+                '</p>';
+            break;
+            
+        case 'text_button_html':
+            // quick dirty hack to display status 'held' as 'rejection under review' - per myGengo feedback
+            var displayed_status = (data.status == 'held') ? 'rejection under review' : data.status;
+            
+            html_result = 
+                (data.slug.length > 18 ? data.slug.substring(0, 18) + '...' : data.slug) + '</br>' +
+                capitalise_first(displayed_status);
+            break;
+            
+        case 'add_job_html':
+            html_result =
+                'Order Translation</br>' +
+                'Credits: $' + data;
+            break;
+            
+        case 'job_form':
+            html_result = 
+                '<input type="text" id="new_slug" value="Job title"/></br>' +
+                '<textarea id="new_body_src">Text to translate</textarea>' +
+                '<textarea id="new_comment">Comment for translator</textarea>' +
+                'From: <select id="new_lc_src"></select></br>' +
+                'To: <select id="new_lc_tgt"></select></br>' +
+                'Tier: <select id="new_tier"></select></br>' +
+                '<button id="new_purchase">Purchase:</button>';
+            break;
+        
+        case 'new_lc_src':
+            var lc_src = {};
+            
+            for (i in gadgetgengo.lang_pairs) {
+                if (!(gadgetgengo.lang_pairs[i].lc_src in lc_src)) {
+                    lc_src[gadgetgengo.lang_pairs[i].lc_src] = gadgetgengo.lang_pairs[i].lc_src;
+                };
+            };
+            for (i in lc_src) {
+                html_result += '<option value="' + lc_src[i] + '">' + langcodes[lc_src[i]] + '</option>';
+            };
+            break;
+            
+        case 'new_lc_tgt':
+            var lc_tgt = {};
+            
+            for (i in gadgetgengo.lang_pairs) {
+                if (gadgetgengo.lang_pairs[i].lc_src == $('#new_lc_src').val()) {
+                    lc_tgt[gadgetgengo.lang_pairs[i].lc_tgt] = gadgetgengo.lang_pairs[i].lc_tgt;
+                };
+            };
+            for (i in json_sort(lc_tgt)) {
+                html_result += '<option value="' + i + '">' + langcodes[i] + '</option>';
+            };
+            break;
+        
+        case 'new_tier':
+            var tier = {};
+            
+            for (i in gadgetgengo.lang_pairs) {
+                if (gadgetgengo.lang_pairs[i].lc_src == $('#new_lc_src').val() &&
+                    gadgetgengo.lang_pairs[i].lc_tgt == $('#new_lc_tgt').val()) {
+                        tier[gadgetgengo.lang_pairs[i].tier] = gadgetgengo.lang_pairs[i].tier;
+                };
+            };
+            
+            for (i in json_sort(tier)) {
+                html_result += '<option value="' + i + '">' + capitalise_first(i) + '</option>';
+            };
+            break;
+        
+        case 'job_details':
+            html_result =
+                '<p class="bold">#' + data.job_id + ' (' + langcodes[data.lc_src] + ')</p>' +
+                '<p>' + data.body_src + '</p></br>' +
+                '<p class="bold">' + capitalise_first(data.tier) + ' (' + langcodes[data.lc_tgt] + ')</p>';
+                
+            if (data.status == 'reviewable') {
+                var link = APIQuery(mygengo.translate_job_id_preview_get, {}, {}, {'job_id': data.job_id}).url;
+                html_result +=
+                    '<a href="' + "javascript: open_window('" + settings.run_mode + link + "', 460, 673)" + '">Preview human translation</a></br></br>';
+            }
+            else {   
+                html_result +=
+                    (data.status != 'approved' ? '<p class="italic">(Preview by machine)</p>': '') +
+                    '<p>' + data.body_tgt + '</p></br>';
+            }
+            html_result += 
+                '<p class="bold">Actions:</p>' +
+                '<select id="job_actions"></select></br>' +
+                '<div class="hidden" id="job_action_form"></div>';
+            break;
+        
+        case 'add_job_actions':
+            for (i in data) {
+                html_result += '<option value="' + i + '">' + data[i] + '</option>';
+            };
+            break;
+        
+        case 'comment_form':
+            html_result = 
+                '<textarea id="job_details_enter_comment">Leave comments for the translator here</textarea>' +
+                '<button type="button" id="job_details_post_comment">Post</button>' + '</br>' +
+                '<p id="comment_thread"></p>' +
+                '<a id="job_details_view_comments" href="javascript:">View Comments</a>';
+            break;
+            
+        case 'cancel_form':
+            html_result = 
+                '<p>Are you sure you wish to cancel?</p>' +
+                '<button id="job_details_cancel_yes">Yes</button>' + '<button id="job_details_cancel_no">No</button>';
+            break;
+            
+        case 'revise_form':
+            html_result =
+                '<textarea id="job_details_revise_comment">Please detail your reasons for revision</textarea>' +
+                '<button type="button" id="job_details_revise_yes">Revise</button>' + '<button id="job_details_revise_no">Cancel</button>';
+            break;
+            
+        case 'approve_form':
+            html_result =
+                '<textarea id="job_details_approve_translator_feedback">Feedback for translator (optional)</textarea>' +
+                '<textarea id="job_details_approve_mygengo_feedback">Feedback for myGengo (optional)</textarea>' +
+                '<select id="job_details_approve_rating">' +
+                    '<option value="default">Rating</option>' +
+                    '<option value="1">1 (Poor)</option>' + 
+                    '<option value="2">2</option>' +
+                    '<option value="3">3</option>' +
+                    '<option value="4">4</option>' +
+                    '<option value="5">5 (Fantastic)</option>' +
+                '</select></br>' +
+                '<button id="job_details_approve_yes">Approve</button>' + '<button id="job_details_approve_no">Cancel</button>';
+            break;
+            
+        case 'reject_form':
+            html_result = 
+                '<select id="job_details_reject_reason">' +
+                    '<option value="default">Reason for rejection</option>' +
+                    '<option value="incomplete">Incomplete</option>' +
+                    '<option value="quality">Quality</option>' +
+                    '<option value="other">Other</option>' +
+                '</select>' +
+                '<textarea id="job_details_reject_comment">Please detail your reasons for rejection</textarea>' +
+                '<select id="job_details_reject_followup">' +
+                    '<option value="default">Follow up action</option>' +
+                    '<option value="requeue">Requeue</option>' +
+                    '<option value="cancel">Cancel</option>' +
+                '</select></br>' +
+                '<img id="job_details_reject_captcha_img" src="' + data + '"/>' +
+                '<input type="text" id="job_details_reject_captcha" value="Enter CAPTCHA"></input>' +
+                '<button id="job_details_reject_yes">Reject</button>' + '<button id="job_details_reject_no">Cancel</button>';
+            break;
+            
+        case 'view_comments':
+            if (data.length != 0) {
+                html_result = '';
+                for (i=0; i<data.length; i++) {
+                    html_result += 
+                        data[i].body + '</br>' +
+                        '<i>' + data[i].author + ', ' + date_parse(data[i].ctime) + '</i></br></br>';
+                };
+            }
+            else {
+                html_result = 'No comments';
+            };
+            break;
+    };
+    return html_result;
+};
+
+function get_job_form() {
+    return {
+        'slug':     $('#new_slug').val(),
+        'body_src': $('#new_body_src').val(),
+        'lc_src':   $('#new_lc_src').val(),
+        'lc_tgt':   $('#new_lc_tgt').val(),
+        'tier':     $('#new_tier').val()
+        //comments can't be added via post job call
+    };
+};
+
+function job_parser(data) {
+    return {
+        'slug':     data.slug,
+        'body_src': data.body_src,
+        'lc_src':   data.lc_src,
+        'lc_tgt':   data.lc_tgt,
+        'tier':     (data.tier == 'ultra_pro') ? 'ultra' : data.tier //MyGengo API bug: difference in naming of 'ultra' tier between POST and GET methods
+    };
+};
+
+function update_key_value_pairs(current, latest) {
+    for (i in latest) {
+        current[i] = latest[i];
+    };
+};
+
+function capitalise_first(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+function date_parse(ctime) {
+    var d = new Date(ctime * 1000);
+    return d.getDate() + '/' + d.getMonth() + '/' + d.getFullYear();
+};
+
+function open_window(url, h, w) {
+    new_window = window.open(url, '', 'height = ' + h + ', width = ' + w);
+    if (window.focus) {
+        new_window.focus()
+    };
+};
+</script>
+
+<!-- gadget script -->
+<script type='text/javascript'>
+    $(document).ready(function() {
+        gui_handler('load_base_html');
+        gui_handler('init');
+        
+        // initial requests
+        if (settings.api_key == 'Enter public key' || settings.private_key == 'Enter private key') {
+            gui_handler('set_output_field_msg', 
+                'Welcome to G-Gengo!</br></br>' +
+                'Please set your API keys by clicking the Options button' + '</br></br>' +
+                'Get your API keys' + '<a href="' + "javascript: open_window('http://mygengo.com/express/account/api_settings/', 620, 1070)" + '">here</a>'
+            );
+        }
+        else {
+            AJAXRequest(APIQuery(mygengo.account_balance_get));
+            AJAXRequest(APIQuery(mygengo.translate_job_language_pairs_get));
+            AJAXRequest(APIQuery(mygengo.translate_jobs_get));
+        };
+    });
+</script>
+
+<style>
+    html {
+        overflow:hidden;
+    }
+
+    body, button, input, select, textarea {
+        font-family: 'Tahoma', Geneva, sans-serif;
+        font-size:11px;
+    }
+    
+    button {
+        margin:0px;
+    }
+    
+    button::-moz-focus-inner {
+        margin:0px;
+        padding:0px;
+    }
+
+    input, select, textarea, .text_button {
+        border:solid 1px #0099CC;
+    }
+
+    input, select, textarea {
+        margin:1px;
+    }
+    
+    input, textarea {
+        width:125px;
+    }
+
+    body {
+        background:transparent;
+        color:#195F7F;
+        width:151px;
+    }
+    
+    p, a {
+        margin:0px;
+        padding-left:3px;
+    }
+
+    a {
+        color:blue;
+    }
+
+    textarea {
+        resize:none;
+    }
+
+    p.text_button {
+        background:#195F7F;
+        color:white;
+        cursor:pointer;
+        padding-top:1px;
+        padding-bottom:1px;
+    }
+
+    p.text_button:hover {
+        background:white;
+        color:#195F7F;
+    }
+
+    p.text_button:first-line {
+        font-weight:bold;
+    }
+    
+    button#minmax_btn {
+        float:right;
+    }
+
+    div.container {
+        background-color:white;
+        border:solid 1px #0099CC;
+        height:105px;
+        margin:3px;
+        overflow:auto;
+        padding:0px;
+        width:151px;
+    }
+    
+    div.hidden {
+        border:solid 0px;
+        padding:0px;
+        margin:0px;
+    }
+
+    div#output_field, div#options_form, div#job_form {
+        height:125px;
+        padding-top:2px;
+    }    
+    
+    div#job_list {
+        background:transparent;
+    }
+
+    div#job_form, div#options_form {
+        display:none;
+        text-align:center
+    }
+
+    textarea#new_body_src {
+        height:84px;
+    }
+
+    p.bold {
+        font-weight:bold;
+    }
+
+    p.italic {
+        font-style:italic;
+    }
+
+    p#add_job {
+        background:#FF6600;
+        color:white;
+        /* padding-top:5px; removed to accomodate display of credits*/
+        /* padding-bottom:5px; removed to accomodate display of credits*/
+    }
+
+    p#add_job:hover {
+        background:white;
+        color:#FF6600;
+    }
+    
+    p#comment_thread {
+        display:none;
+    }
+
+    <!-- remove google gadget padding -->
+    .modboxin {
+        padding: 0px !important;
+    }
+</style> 
+
+<body>
+    <p>Javascript needs to be enabled</p>
+</body>
+
+]]>
+</Content>
+</Module>

@@ -1,0 +1,15 @@
+application: gaegengo
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+
+- url: /gadget
+  static_dir: gadget
+
+- url: .*
+  script: main.py
+  secure: optional
