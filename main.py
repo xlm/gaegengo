@@ -27,12 +27,15 @@ class MainHandler(webapp.RequestHandler):
         url = self.request.get('query')
         response_type = 'json'
         
-        result = urlfetch.fetch(url, headers={'Accept': 'application/' + response_type})        
+        if url == '':
+            self.redirect('https://github.com/xlm/gaegengo/blob/master/README.md#readme')
+        else:
+            result = urlfetch.fetch(url, headers={'Accept': 'application/' + response_type})
         
-        if result.status_code == 200:
-            self.response.headers['Access-Control-Allow-Origin'] = '*'
-            self.response.headers['Content-Type'] = 'application/json'
-            self.response.out.write(result.content)
+            if result.status_code == 200:
+                self.response.headers['Access-Control-Allow-Origin'] = '*'
+                self.response.headers['Content-Type'] = 'application/json'
+                self.response.out.write(result.content)
             
     def delete(self):
         url = self.request.get('query')
