@@ -1284,3 +1284,11 @@ function open_window(url, h, w) {
         new_window.focus()
     };
 };
+
+function langcodes_parser(data) {
+    var codes = {};
+    for (i in data.response) {
+        codes[data.response[i].lc] = data.response[i].language;
+    };
+    return codes;
+};
