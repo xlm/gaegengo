@@ -954,7 +954,7 @@ function gui_callback(call, data) {
                 gui_handler('save_options');
                 gui_handler('init');
                 AJAXRequest(APIQuery(mygengo.account_balance_get));
-                AJAXRequest(APIQuery(mygengo.translate_job_language_pairs_get));
+                AJAXRequest(APIQuery(mygengo.translate_service_languages_get)); // which then calls translate_job_language_pairs_get
                 AJAXRequest(APIQuery(mygengo.translate_jobs_get));
             }
             else {
