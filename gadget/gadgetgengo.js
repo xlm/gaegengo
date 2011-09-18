@@ -147,6 +147,12 @@ function ajax_callback(data, call) {
             gadgetgengo.balance = data.response.credits;
             gui_handler('update_balance');
             break;
+            
+        case mygengo.translate_service_languages_get:
+            langcodes = langcodes_parser(data);
+            //chained AJAX call to prevent sync problems
+            AJAXRequest(APIQuery(mygengo.translate_job_language_pairs_get));
+            break;
         
         case mygengo.translate_job_language_pairs_get:
             gadgetgengo.lang_pairs = data.response;
