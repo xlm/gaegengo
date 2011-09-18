@@ -34,6 +34,10 @@ body {
     width:151px;
 }
 
+select {
+    width:80px;
+}
+
 p, a {
     margin:0px;
     padding-left:3px;
