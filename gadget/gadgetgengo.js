@@ -1111,7 +1111,7 @@ function html_parser(call, data) {
                 };
             };
             for (i in lc_src) {
-                var display_value = (langcodes[lc_src[i]] === undefined) ? lc_src[i] : langcodes[lc_src[i]];
+                var display_value = langcodes[lc_src[i]] ? langcodes[lc_src[i]]: lc_src[i];
                 html_result += '<option value="' + lc_src[i] + '">' + display_value + '</option>';
             };
             break;
@@ -1125,7 +1125,7 @@ function html_parser(call, data) {
                 };
             };
             for (i in json_sort(lc_tgt)) {
-                var display_value = (langcodes[i]] === undefined) ? i : langcodes[i];
+                var display_value = langcodes[i] ? langcodes[i]: i;
                 html_result += '<option value="' + i + '">' + display_value + '</option>';
             };
             break;
