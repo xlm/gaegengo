@@ -47,15 +47,7 @@ http://www.gnu.org/licenses/lgpl.html
         'live':                                 'http://api.mygengo.com/v1/'
     };
     
-    var langcodes = {
-        'de': 'German',
-        'en': 'English',
-        'es': 'Spanish',
-        'it': 'Italian',
-        'ja': 'Japanese',
-        'ru': 'Russian',
-        'zh': 'Chinese'
-    };
+    var langcodes = {};
     
     var prefs = new _IG_Prefs();
     
