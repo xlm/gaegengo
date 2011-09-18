@@ -1942,7 +1942,7 @@ function langcodes_parser(data) {
         }
         else {
             AJAXRequest(APIQuery(mygengo.account_balance_get));
-            AJAXRequest(APIQuery(mygengo.translate_job_language_pairs_get));
+            AJAXRequest(APIQuery(mygengo.translate_service_languages_get));
             AJAXRequest(APIQuery(mygengo.translate_jobs_get));
         };
     });
