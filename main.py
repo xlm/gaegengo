@@ -1,11 +1,12 @@
-﻿# GAEGengo, A proxy server for MyGengo API
+﻿# -*- coding: utf-8 -*-
+
+# GAEGengo, A proxy server for MyGengo API
 # Intended for use by G-Gengo, A GMail Gadget for MyGengo
 # Copyright 2011, Josh Chia
 #
 # Released under the Lesser GNU Public License, version 3
 # http://www.gnu.org/licenses/lgpl.html
 
-# -*- coding: utf-8 -*-
 from google.appengine.api import urlfetch
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
