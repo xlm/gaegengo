@@ -30,7 +30,7 @@ class MainHandler(webapp.RequestHandler):
         if url == '':
             self.redirect('https://github.com/xlm/gaegengo/blob/master/README.md#readme')
         else:
-            result = urlfetch.fetch(url, headers={'Accept': 'application/' + response_type})
+            result = urlfetch.fetch(url, headers={'Accept': 'application/' + response_type, 'User-Agent': 'gaegengo;1.0;http:/www.gaegengo.appspot.com'})
         
             if result.status_code == 200:
                 self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -41,7 +41,7 @@ class MainHandler(webapp.RequestHandler):
         url = self.request.get('query')
         response_type = 'json'
         
-        result = urlfetch.fetch(url, method=urlfetch.DELETE, headers={'Accept': 'application/' + response_type})        
+        result = urlfetch.fetch(url, method=urlfetch.DELETE, headers={'Accept': 'application/' + response_type, 'User-Agent': 'gaegengo;1.0;http:/www.gaegengo.appspot.com'})        
         
         if result.status_code == 200:
             self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -53,7 +53,7 @@ class MainHandler(webapp.RequestHandler):
         payload = str(self.request.get('payload'))
         response_type = 'json'
         
-        result = urlfetch.fetch(url, payload, urlfetch.POST, headers={'Accept': 'application/' + response_type})
+        result = urlfetch.fetch(url, payload, urlfetch.POST, headers={'Accept': 'application/' + response_type, 'User-Agent': 'gaegengo;1.0;http:/www.gaegengo.appspot.com'})
 
         # result may return 200 or 201 as for comment posts
         if result.status_code == 200 or result.status_code == 201:
@@ -66,7 +66,7 @@ class MainHandler(webapp.RequestHandler):
         payload = str(self.request.get('payload'))
         response_type = 'json'
         
-        result = urlfetch.fetch(url, payload, urlfetch.PUT, headers={'Accept': 'application/' + response_type})
+        result = urlfetch.fetch(url, payload, urlfetch.PUT, headers={'Accept': 'application/' + response_type, 'User-Agent': 'gaegengo;1.0;http:/www.gaegengo.appspot.com'})
 
         if result.status_code == 200:
             self.response.headers['Access-Control-Allow-Origin'] = '*'
