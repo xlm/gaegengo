@@ -9,7 +9,7 @@ http://www.gnu.org/licenses/lgpl.html
 -->
 
 <Module>
-<ModulePrefs title="G-Gengo" directory_title="G-Gengo" author="Josh Chia" author_email="xlm.feedback+g-gengo@gmail.com" description="A GMail Gadget for MyGengo" height="270">
+<ModulePrefs title="G-Gengo" directory_title="G-Gengo" author="Josh Chia" author_email="xlm.feedback+g-gengo@gmail.com" description="A GMail Gadget for myGengo" height="264">
     <Require feature="setprefs"/>
     <Require feature="settitle"/>
 </ModulePrefs>
