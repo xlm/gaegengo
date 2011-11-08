@@ -1439,7 +1439,7 @@ function gui_handler(call, data) {
             if (data[0] == data[1]) {
                 gui_handler('min_job_list');
                 gui_handler('show_only', '#output_field');
-                gui_handler('set_output_field_msg', 'Update complete!');
+                $('#output_field').append(html_parser('p', '</br>Update complete!'));
                 $('#update_btn').removeAttr('disabled');
             };
             break;
