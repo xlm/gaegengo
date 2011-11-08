@@ -714,7 +714,7 @@ var AJAXRequest = function(api_obj, callback) {
                     break;
                 
                 default:
-                    alert('G-Gengo has encountered error ' + data.err.code + ':\n' + capitalise_first(data.err.msg));
+                    gui_handler('set_output_field_msg', 'G-Gengo has encountered Error ' + data.err.code + ':</br>' + capitalise_first(data.err.msg));
                     break;
             };
         }
