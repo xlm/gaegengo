@@ -91,7 +91,7 @@ div.hidden {
 div#output_field, div#options_form, div#job_form {
     height:125px;
     padding-top:2px;
-}    
+}
 
 div#job_list {
     background:transparent;
@@ -100,6 +100,14 @@ div#job_list {
 div#job_form, div#options_form {
     display:none;
     text-align:center
+}
+
+div#mygengo_signin:hover {
+    cursor:pointer;
+}
+
+select#job_actions {
+    width:125px;
 }
 
 textarea#new_body_src {
