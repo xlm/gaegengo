@@ -1568,6 +1568,7 @@ function gui_handler(call, data) {
                         gui_callback('post_comment', data);
                     });
                     $('#job_details_view_comments').click(function() {
+                        $('#job_details_view_comments').html('Loading...');
                         gui_callback('view_comments', data);
                     });
                     break;
