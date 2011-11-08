@@ -1661,6 +1661,12 @@ function gui_handler(call, data) {
                     break;
             };
             break;
+        
+        case 'gui_reset':
+            $('#update_btn').removeAttr('disabled');
+            $('#new_purchase').removeAttr('disabled');
+            gui_handler('show_only', '#output_field');
+            break;
     };
 };
 
