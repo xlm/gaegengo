@@ -715,6 +715,7 @@ var AJAXRequest = function(api_obj, callback) {
                 
                 default:
                     gui_handler('set_output_field_msg', 'G-Gengo has encountered Error ' + data.err.code + ':</br>' + capitalise_first(data.err.msg));
+                    gui_handler('gui_reset');
                     break;
             };
         }
@@ -762,6 +763,7 @@ var AJAXRequest = function(api_obj, callback) {
         
         case 'ERROR':
             alert('G-Gengo has encountered an error:\n' + api_obj.data);
+            gui_handler('gui_reset');
             break;
             
         default:
