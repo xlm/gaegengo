@@ -1712,7 +1712,7 @@ function html_parser(call, data) {
             
             html_result = 
                 '<p class="text_button" id="' + data.job_id +'" title="">' +
-                    (data.slug.length > 18 ? data.slug.substring(0, 18) + '...' : data.slug) + '</br>' +
+                    (data.slug.length > 15 ? data.slug.substring(0, 15) + '...' : data.slug) + '</br>' +
                     capitalise_first(displayed_status) +
                 '</p>';
             break;
@@ -1722,7 +1722,7 @@ function html_parser(call, data) {
             var displayed_status = (data.status == 'held') ? 'rejection under review' : data.status;
             
             html_result = 
-                (data.slug.length > 18 ? data.slug.substring(0, 18) + '...' : data.slug) + '</br>' +
+                (data.slug.length > 15 ? data.slug.substring(0, 15) + '...' : data.slug) + '</br>' +
                 capitalise_first(displayed_status);
             break;
             
