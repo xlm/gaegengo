@@ -1937,6 +1937,35 @@ function langcodes_parser(data) {
 };
 </script>
 
+<!-- myGengo Passport scripts -->
+<!-- disabled until fix comes out
+<script type="text/javascript" src="http://ogneg.com/js/passport.min.js"></script>
+<script type="text/javascript">
+    function create_MyGengoPassport() {
+        var passport = new MyGengoPassport({
+            // Your application name
+            appName: 'G-Gengo',
+
+            // HTML ID to set as the sign-in button
+            button: document.getElementById('mygengo_signin'),
+            
+            // Choose from 'largeBlue', 'largeWhite', 'smallBlue', 'smallWhite'
+            buttonStyle: 'smallBlue',
+            
+            modal: true,
+            
+            // Your custom function to run when they're signed in!
+            on_authentication: function(data) {
+                alert(data.public_key);
+                $('#options_api_key').val(data.public_key);
+                $('#options_private_key').val(data.private_key);
+                gui_callback('save_options');
+            }
+        });
+    };
+</script>
+-->
+
 <!-- gadget script -->
 <script type='text/javascript'>
     $(document).ready(function() {
@@ -1947,9 +1976,12 @@ function langcodes_parser(data) {
         if (settings.api_key == 'Enter public key' || settings.private_key == 'Enter private key') {
             gui_handler('set_output_field_msg', 
                 'Welcome to G-Gengo!</br></br>' +
-                'Please set your API keys by clicking the Options button' + '</br></br>' +
-                'Get your API keys' + '<a href="' + "javascript: open_window('http://mygengo.com/express/account/api_settings/', 620, 1070)" + '">here</a>'
+                'Please set your API keys first by clicking the Options button' + '</br></br>' +
+                //'<div id="mygengo_signin"></div></br></br>' +
+                'Get your API keys' + '<a href="' + "javascript: open_window('http://mygengo.com/express/account/api_settings/', 620, 1000)" + '">here</a></br>' +
+                'Or Signup ' + '<a href="' + "javascript: open_window('https://mygengo.com/auth/form/signup/', 620, 1000)" + '">here</a>'
             );
+            //create_MyGengoPassport();
         }
         else {
             AJAXRequest(APIQuery(mygengo.account_balance_get));
