@@ -704,7 +704,7 @@ var AJAXRequest = function(api_obj, callback) {
         if (data.opstat == 'error') {
             switch(data.err.code) {
                 case 2401:
-                    alert('G-Gengo has encountered error ' + data.err.code + ':\n' + 'Invalid CAPTCHA, please enter the new CAPTCHA provided');
+                    alert('G-Gengo has encountered Error ' + data.err.code + ':\n' + 'Invalid CAPTCHA, please enter the new CAPTCHA provided');
                     callback(data, api_obj.call);
                     break;
                 
