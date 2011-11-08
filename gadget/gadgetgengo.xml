@@ -2000,13 +2000,16 @@ function langcodes_parser(data) {
         font-family: 'Tahoma', Geneva, sans-serif;
         font-size:11px;
     }
-    
+
     button {
         margin:0px;
+        overflow:visible;
+        padding-left:2px;
+        padding-right:2px;
     }
-    
+
     button::-moz-focus-inner {
-        margin:0px;
+        border:0px;
         padding:0px;
     }
 
