@@ -2074,11 +2074,11 @@ function langcodes_parser(data) {
         border:solid 1px #0099CC;
         height:105px;
         margin:3px;
-        overflow:auto;
+        overflow-x: hidden;
         padding:0px;
         width:124px;
     }
-    
+
     div.hidden {
         border:solid 0px;
         padding:0px;
@@ -2088,8 +2088,8 @@ function langcodes_parser(data) {
     div#output_field, div#options_form, div#job_form {
         height:125px;
         padding-top:2px;
-    }    
-    
+    }
+
     div#job_list {
         background:transparent;
     }
@@ -2097,6 +2097,10 @@ function langcodes_parser(data) {
     div#job_form, div#options_form {
         display:none;
         text-align:center
+    }
+
+    div#mygengo_signin:hover {
+        cursor:pointer;
     }
 
     select#job_actions {
@@ -2126,7 +2130,7 @@ function langcodes_parser(data) {
         background:white;
         color:#FF6600;
     }
-    
+
     p#comment_thread {
         display:none;
     }
