@@ -647,10 +647,8 @@ http://www.gnu.org/licenses/lgpl.html
             var xdr = new XDomainRequest();
             xdr.timeout = 30000; //because IE sucks
             xdr.ontimeout = function() { 
-                alert('G-Gengo has encountered an error:\n' +
-                    'Please check your connection or API access\n'
-                );
-                $('#update_btn').removeAttr('disabled');
+                gui_handler('set_output_field_msg', 'G-Gengo has encountered an error:</br>Please check your connection or API access');
+                gui_handler('gui_reset');
                 xdr.send(data)
             };
             xdr.onprogress = function() {};
@@ -671,7 +669,8 @@ http://www.gnu.org/licenses/lgpl.html
             var xdr = new XDomainRequest();
             xdr.timeout = 5000;
             xdr.ontimeout = function() { 
-                alert('timeout!');
+                gui_handler('set_output_field_msg', 'G-Gengo is sorry!</br>Your connection timed out!</br>Please check your connection');
+                gui_handler('gui_reset');
                 xdr.send(data)
             };
             xdr.onprogress = function() {};
@@ -690,10 +689,8 @@ http://www.gnu.org/licenses/lgpl.html
 
 $.ajaxSetup({
     error: function(xhr) {
-        alert('G-Gengo has encountered an error:\n' +
-            'Please check your connection or API access\n' +
-            'Request status: ' + xhr.status + ' ' + xhr.statusText
-        );
+        gui_handler('set_output_field_msg', 'G-Gengo has encountered an error:</br>Please check your connection or API access</br>Request status: ' + xhr.status + ' ' + xhr.statusText);
+        gui_handler('gui_reset');
     }
 });
 
