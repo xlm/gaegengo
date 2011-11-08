@@ -707,7 +707,12 @@ var AJAXRequest = function(api_obj, callback) {
                     alert('G-Gengo has encountered error ' + data.err.code + ':\n' + 'Invalid CAPTCHA, please enter the new CAPTCHA provided');
                     callback(data, api_obj.call);
                     break;
-            
+                
+                case 2700:
+                    gui_handler('set_output_field_msg', 'Your credits are low, top up <a href="' + "javascript: open_window('http://mygengo.com/express/account/top_up/', 620, 1000)" + '">here</a>');
+                    gui_handler('gui_reset');
+                    break;
+                
                 default:
                     alert('G-Gengo has encountered error ' + data.err.code + ':\n' + capitalise_first(data.err.msg));
                     break;
