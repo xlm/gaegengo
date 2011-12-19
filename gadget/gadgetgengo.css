@@ -9,10 +9,13 @@ body, button, input, select, textarea {
 
 button {
     margin:0px;
+    overflow:visible;
+    padding-left:2px;
+    padding-right:2px;
 }
 
 button::-moz-focus-inner {
-    margin:0px;
+    border:0px;
     padding:0px;
 }
 
@@ -25,17 +28,17 @@ input, select, textarea {
 }
 
 input, textarea {
-    width:125px;
+    width:98px;
 }
 
 body {
     background:transparent;
     color:#195F7F;
-    width:151px;
+    width:124px;
 }
 
 select {
-    width:80px;
+    width:58px;
 }
 
 p, a {
@@ -77,9 +80,9 @@ div.container {
     border:solid 1px #0099CC;
     height:105px;
     margin:3px;
-    overflow:auto;
+    overflow-x: hidden;
     padding:0px;
-    width:151px;
+    width:124px;
 }
 
 div.hidden {
@@ -107,7 +110,7 @@ div#mygengo_signin:hover {
 }
 
 select#job_actions {
-    width:125px;
+    width:98px;
 }
 
 textarea#new_body_src {
@@ -136,4 +139,9 @@ p#add_job:hover {
 
 p#comment_thread {
     display:none;
+}
+
+<!-- remove google gadget padding -->
+.modboxin {
+    padding: 0px !important;
 }
